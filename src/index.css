@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #07090e;
+    color: #e2e8f0;
+  }
+}
+
+.font-urdu {
+  font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', serif;
+  line-height: 2.2;
+}
+
+.font-urdu-clean {
+  font-family: 'Noto Sans Arabic', 'Noto Nastaliq Urdu', sans-serif;
+  line-height: 1.7;
+}
+
+/* Glassmorphism and ambient accents */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(212, 175, 55, 0.12);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #fce8a6 0%, #d4af37 50%, #aa820a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border {
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
