@@ -11,6 +11,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { getProfileImage, saveProfileImage, clearProfileImage } from '../utils/imageStorage';
 
 export function Hero() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -19,49 +20,72 @@ export function Hero() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Check local storage first (for instant browser persistence)
-    const saved = localStorage.getItem('mustafa_profile_photo');
-    if (saved) {
-      setProfileImage(saved);
-      return;
+    let isMounted = true;
+
+    async function loadStoredImage() {
+      // 1. Check persistent IndexedDB storage
+      const saved = await getProfileImage();
+      if (!isMounted) return;
+
+      if (saved) {
+        setProfileImage(saved);
+        setImageError(false);
+        return;
+      }
+
+      // 2. Try loading /assets/profile.jpg
+      const img = new Image();
+      img.src = PERSONAL_INFO.profileImagePath;
+      img.onload = () => {
+        if (!isMounted) return;
+        setProfileImage(PERSONAL_INFO.profileImagePath);
+        setImageError(false);
+      };
+      img.onerror = () => {
+        if (!isMounted) return;
+        setImageError(true);
+      };
     }
 
-    // Try loading /assets/profile.jpg
-    const img = new Image();
-    img.src = PERSONAL_INFO.profileImagePath;
-    img.onload = () => {
-      setProfileImage(PERSONAL_INFO.profileImagePath);
-      setImageError(false);
-    };
-    img.onerror = () => {
-      setImageError(true);
+    loadStoredImage();
+
+    return () => {
+      isMounted = false;
     };
   }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Please choose an image under 5MB.');
+      if (file.size > 20 * 1024 * 1024) {
+        alert('Please choose an image under 20MB.');
         return;
       }
+
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const base64 = reader.result as string;
+        // Instantly display the chosen original photo
         setProfileImage(base64);
         setImageError(false);
-        localStorage.setItem('mustafa_profile_photo', base64);
         setUploadSuccess(true);
         setTimeout(() => setUploadSuccess(false), 3500);
+
+        // Persist safely in IndexedDB (no 5MB QuotaExceededError)
+        try {
+          await saveProfileImage(base64);
+        } catch (err) {
+          console.warn('Failed to save to local cache:', err);
+        }
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleResetPlaceholder = () => {
+  const handleResetPlaceholder = async () => {
     setProfileImage(null);
     setImageError(true);
-    localStorage.removeItem('mustafa_profile_photo');
+    await clearProfileImage();
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
