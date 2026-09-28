@@ -269,6 +269,7 @@ export function Hero() {
                       src={profileImage} 
                       alt="Muhammad Mustafa Nasiri" 
                       className="w-full h-full object-cover rounded-lg"
+                      referrerPolicy="no-referrer"
                       onError={() => setImageError(true)}
                     />
                   ) : (
