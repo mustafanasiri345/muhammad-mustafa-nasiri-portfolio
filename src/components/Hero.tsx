@@ -17,6 +17,7 @@ export function Hero() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -58,10 +59,12 @@ export function Hero() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 20 * 1024 * 1024) {
-        alert('Please choose an image under 20MB.');
+        setUploadError('Please choose an image under 20MB.');
+        setTimeout(() => setUploadError(null), 4000);
         return;
       }
 
+      setUploadError(null);
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = reader.result as string;
@@ -347,6 +350,12 @@ export function Hero() {
                     <div className="flex items-center justify-center gap-1.5 text-[11px] text-emerald-400 font-medium">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Photo loaded successfully!</span>
+                    </div>
+                  )}
+
+                  {uploadError && (
+                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-rose-400 font-medium">
+                      <span>{uploadError}</span>
                     </div>
                   )}
 
