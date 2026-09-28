@@ -335,24 +335,57 @@ export const portfolioCategories = PORTFOLIO_CATEGORIES;
 
 /* ==================================================
    CENTRALIZED PORTFOLIO DATA ITEMS
-   Kept empty as requested. When you add real work here,
-   cards automatically appear in the respective category!
+   Four real original projects inside Islamic & Religious Designs
    ================================================== */
 export const portfolioItems: PortfolioProject[] = [
-  // To add a real project, simply add an object like:
-  // {
-  //   id: 'proj-1',
-  //   title: 'My Real AI Project',
-  //   urduTitle: 'میرا پروجیکٹ',
-  //   category: 'AI Videos',
-  //   description: 'Authentic project description.',
-  //   urduDescription: 'پروجیکٹ کی تفصیل',
-  //   mediaType: 'video', // or 'image'
-  //   imageSrc: '/assets/portfolio/project-1.jpg',
-  //   videoSrc: 'https://www.youtube.com/watch?v=...',
-  //   projectUrl: 'https://...',
-  //   tags: ['AI Video', 'Nasiri Production']
-  // }
+  {
+    id: 'islamic-design-1',
+    title: 'مجلسِ عزا سے اقتباسات',
+    urduTitle: 'مجلسِ عزا سے اقتباسات',
+    category: 'Islamic & Religious Designs',
+    description: 'مجلسِ عزا کے اہم دینی نکات اور منتخب اقتباسات کو معلوماتی اور خوبصورت انداز میں پیش کرنے کے لیے تیار کردہ ڈیزائن۔',
+    urduDescription: 'مجلسِ عزا کے اہم دینی نکات اور منتخب اقتباسات کو معلوماتی اور خوبصورت انداز میں پیش کرنے کے لیے تیار کردہ ڈیزائن۔',
+    mediaType: 'image',
+    imageSrc: '/assets/portfolio/1790530201357.jpg',
+    tags: ['مجلسِ عزا', 'دینی پوسٹر', 'Nasiri Production', 'اسلامی ڈیزائن'],
+    aspectRatio: '9/16'
+  },
+  {
+    id: 'islamic-design-2',
+    title: 'مجلسِ عزا — امام رضا علیہ السلام',
+    urduTitle: 'مجلسِ عزا — امام رضا علیہ السلام',
+    category: 'Islamic & Religious Designs',
+    description: 'شہادتِ امام رضا علیہ السلام کی مناسبت سے تیار کردہ معلوماتی اور دینی مجلس پوسٹر۔',
+    urduDescription: 'شہادتِ امام رضا علیہ السلام کی مناسبت سے تیار کردہ معلوماتی اور دینی مجلس پوسٹر۔',
+    mediaType: 'image',
+    imageSrc: '/assets/portfolio/1790530201362.jpg',
+    tags: ['امام رضا علیہ السلام', 'مجلسِ عزا', 'Nasiri Production', 'دینی پوسٹر'],
+    aspectRatio: '9/16'
+  },
+  {
+    id: 'islamic-design-3',
+    title: 'خلاصۂ مجلسِ عزا',
+    urduTitle: 'خلاصۂ مجلسِ عزا',
+    category: 'Islamic & Religious Designs',
+    description: 'مجلس کے اہم موضوعات، دینی نکات اور پیغام کو مختصر انداز میں پیش کرنے کے لیے تیار کیا گیا خلاصہ پوسٹر۔',
+    urduDescription: 'مجلس کے اہم موضوعات، دینی نکات اور پیغام کو مختصر انداز میں پیش کرنے کے لیے تیار کیا گیا خلاصہ پوسٹر۔',
+    mediaType: 'image',
+    imageSrc: '/assets/portfolio/1790530201368.jpg',
+    tags: ['خلاصۂ مجلس', 'دینی نکات', 'Nasiri Production', 'اسلامی ڈیزائن'],
+    aspectRatio: '9/16'
+  },
+  {
+    id: 'islamic-design-4',
+    title: 'اقتباساتِ مجلسِ عزا',
+    urduTitle: 'اقتباساتِ مجلسِ عزا',
+    category: 'Islamic & Religious Designs',
+    description: 'مجلسِ عزا کے اہم پیغامات اور منتخب دینی نکات پر مشتمل معلوماتی ڈیزائن۔',
+    urduDescription: 'مجلسِ عزا کے اہم پیغامات اور منتخب دینی نکات پر مشتمل معلوماتی ڈیزائن۔',
+    mediaType: 'image',
+    imageSrc: '/assets/portfolio/1790530201374.jpg',
+    tags: ['اقتباساتِ مجلس', 'دینی پیغامات', 'Nasiri Production', 'اسلامی ڈیزائن'],
+    aspectRatio: '9/16'
+  }
 ];
 
 export const PORTFOLIO_PROJECTS = portfolioItems;

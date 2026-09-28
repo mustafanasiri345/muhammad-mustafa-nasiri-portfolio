@@ -62,7 +62,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         </button>
 
         {/* Media Player / Lightbox Area */}
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-white/10 mb-5 flex items-center justify-center shrink-0">
+        <div className={`relative w-full rounded-xl overflow-hidden bg-black/95 border border-white/10 mb-5 flex items-center justify-center shrink-0 ${
+          project.mediaType === 'video' ? 'aspect-video' : 'min-h-[280px] max-h-[72vh] p-2'
+        }`}>
           {project.mediaType === 'video' && youtubeEmbedUrl ? (
             <iframe
               src={youtubeEmbedUrl}
@@ -85,7 +87,8 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             <img 
               src={project.imageSrc} 
               alt={project.title} 
-              className="w-full h-full object-contain bg-black/90" 
+              referrerPolicy="no-referrer"
+              className="max-h-[68vh] w-auto max-w-full object-contain bg-black/90 rounded-lg shadow-2xl" 
             />
           ) : project.videoSrc ? (
             <div className="flex flex-col items-center justify-center p-6 text-center space-y-3">
