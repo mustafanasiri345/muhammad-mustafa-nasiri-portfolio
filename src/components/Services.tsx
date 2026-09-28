@@ -1,17 +1,17 @@
 import { 
   Film, 
-  Image as ImageIcon, 
   Tv, 
   Palette, 
   Share2, 
   Smartphone, 
-  Terminal, 
   BookOpen, 
-  ArrowUpRight, 
-  Check, 
-  Briefcase 
+  Brain,
+  Video,
+  LayoutTemplate,
+  Briefcase,
+  MessageCircle
 } from 'lucide-react';
-import { SERVICES_DATA, ServiceItem } from '../data/portfolioData';
+import { SERVICES_DATA, ServiceItem, PERSONAL_INFO } from '../data/portfolioData';
 
 interface ServicesProps {
   onSelectService?: (serviceTitle: string) => void;
@@ -20,15 +20,16 @@ interface ServicesProps {
 export function Services({ onSelectService }: ServicesProps) {
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'Film': return <Film className="w-6 h-6" />;
-      case 'Image': return <ImageIcon className="w-6 h-6" />;
-      case 'Tv': return <Tv className="w-6 h-6" />;
-      case 'Palette': return <Palette className="w-6 h-6" />;
-      case 'Share2': return <Share2 className="w-6 h-6" />;
-      case 'Smartphone': return <Smartphone className="w-6 h-6" />;
-      case 'Terminal': return <Terminal className="w-6 h-6" />;
-      case 'BookOpen': return <BookOpen className="w-6 h-6" />;
-      default: return <Briefcase className="w-6 h-6" />;
+      case 'LayoutTemplate': return <LayoutTemplate className="w-5 h-5" />;
+      case 'Palette': return <Palette className="w-5 h-5" />;
+      case 'Film': return <Film className="w-5 h-5" />;
+      case 'Brain': return <Brain className="w-5 h-5" />;
+      case 'Video': return <Video className="w-5 h-5" />;
+      case 'BookOpen': return <BookOpen className="w-5 h-5" />;
+      case 'Tv': return <Tv className="w-5 h-5" />;
+      case 'Share2': return <Share2 className="w-5 h-5" />;
+      case 'Smartphone': return <Smartphone className="w-5 h-5" />;
+      default: return <Briefcase className="w-5 h-5" />;
     }
   };
 
@@ -59,30 +60,33 @@ export function Services({ onSelectService }: ServicesProps) {
         <div className="flex flex-col items-center text-center mb-16">
           <div className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">
             <Briefcase className="w-3.5 h-3.5" />
-            <span>Tailored Offerings</span>
+            <span>Creative & Practical Offerings</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Services & Solutions
+            My Services
           </h2>
-          <div className="mt-2 text-lg font-urdu text-amber-300/80">
-            پیشہ ورانہ تخلیقی خدمات
+          <div className="mt-2 text-xl font-urdu text-amber-300 font-semibold">
+            میری خدمات
           </div>
-          <p className="mt-3 text-slate-400 text-sm max-w-2xl">
-            High-standard generative media, graphic design, and video production tailored for individuals, channels, and digital campaigns.
+          <p className="mt-3 text-slate-400 text-xs sm:text-sm max-w-xl">
+            Professional digital media creation, generative AI production, graphic design, and practical services provided by Nasiri Production.
           </p>
         </div>
 
-        {/* 8 Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 9 Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICES_DATA.map((service: ServiceItem) => {
+            const isPhoneService = service.id === 'srv-9';
             return (
               <div
                 key={service.id}
-                className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between group relative"
+                className={`glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between group relative border ${
+                  isPhoneService ? 'border-amber-400/30 bg-gradient-to-b from-[#0e1628] to-[#070a12]' : 'border-white/5'
+                }`}
               >
                 <div>
                   {/* Top Bar with Number & Icon */}
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-between mb-5">
                     <span className="text-2xl font-black text-amber-400/40 group-hover:text-amber-400 transition-colors font-mono">
                       {service.number}
                     </span>
@@ -92,62 +96,52 @@ export function Services({ onSelectService }: ServicesProps) {
                   </div>
 
                   {/* Urdu Subtitle */}
-                  <div dir="rtl" className="text-xs font-urdu text-amber-300/90 mb-1">
+                  <div dir="rtl" className="text-xs font-urdu text-amber-300/90 mb-1 text-right">
                     {service.urduTitle}
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                  <h3 className="text-lg font-bold text-white mb-2.5 group-hover:text-amber-300 transition-colors">
                     {service.title}
                   </h3>
 
-                  {/* Short Description */}
-                  <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                  {/* English Description */}
+                  <p className="text-xs text-slate-300 leading-relaxed mb-3">
                     {service.shortDesc}
                   </p>
 
-                  {/* Deliverables Checklist */}
-                  <div className="space-y-2 mb-6 pt-4 border-t border-white/5">
-                    {service.deliverables.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                        <Check className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                        <span className="leading-snug">{item}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {/* Urdu Description */}
+                  {service.urduDesc && (
+                    <p dir="rtl" className="text-xs font-urdu text-slate-400 leading-[2.1] mb-4 text-right">
+                      {service.urduDesc}
+                    </p>
+                  )}
                 </div>
 
-                {/* Bottom Action */}
-                <div className="pt-4 border-t border-white/5">
+                {/* Bottom Action Footer */}
+                <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
                   <button
                     type="button"
                     onClick={() => handleInquire(service.title)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-300 hover:text-amber-300 bg-white/5 hover:bg-amber-400/10 rounded-lg transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-300 hover:text-amber-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
                   >
-                    <span>Inquire for this Service</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Inquire Now / رابطہ کریں</span>
                   </button>
+
+                  <a
+                    href={`${PERSONAL_INFO.whatsappUrl}?text=${encodeURIComponent(`السلام علیکم! میں آپ کی سروس "${service.title}" کے بارے میں معلومات حاصل کرنا چاہتا ہوں۔`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Inquire on WhatsApp"
+                    className="p-1.5 rounded-lg text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </a>
                 </div>
+
               </div>
             );
           })}
-        </div>
-
-        {/* Custom Project Callout */}
-        <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-amber-950/20 to-slate-900 border border-amber-400/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h4 className="text-sm font-semibold text-white">Need a customized creative or bilingual project?</h4>
-            <p className="text-xs text-slate-400 mt-1">
-              From end-to-end AI video campaigns to custom Urdu educational series, let's discuss your requirements.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => handleInquire('Custom Project Inquiries')}
-            className="shrink-0 px-5 py-2.5 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer"
-          >
-            Start a Conversation
-          </button>
         </div>
 
       </div>

@@ -1,189 +1,227 @@
 import { useState } from 'react';
 import { 
-  Play, 
-  Image as ImageIcon, 
-  Eye, 
   Sparkles, 
-  SlidersHorizontal,
-  Info
+  Film, 
+  Tv, 
+  Palette, 
+  Image as ImageIcon, 
+  Video, 
+  BookOpen, 
+  Eye, 
+  Play, 
+  ExternalLink,
+  Layers,
+  FolderOpen
 } from 'lucide-react';
-import { PORTFOLIO_PROJECTS, PortfolioProject } from '../data/portfolioData';
+import { 
+  PORTFOLIO_CATEGORIES, 
+  portfolioItems, 
+  PortfolioProject, 
+  PortfolioCategory,
+  PortfolioCategoryConfig 
+} from '../data/portfolioData';
 import { ProjectModal } from './ProjectModal';
 
 export function Portfolio() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
 
-  const categories = [
-    'All',
-    'AI Videos',
-    'AI Images',
-    'Posters',
-    'Thumbnails',
-    'Social Media',
-    'Educational'
-  ];
+  const getCategoryIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'Film': return <Film className="w-5 h-5" />;
+      case 'Tv': return <Tv className="w-5 h-5" />;
+      case 'Image': return <ImageIcon className="w-5 h-5" />;
+      case 'BookOpen': return <BookOpen className="w-5 h-5" />;
+      case 'Sparkles': return <Sparkles className="w-5 h-5" />;
+      case 'Video': return <Video className="w-5 h-5" />;
+      case 'Palette': return <Palette className="w-5 h-5" />;
+      default: return <FolderOpen className="w-5 h-5" />;
+    }
+  };
 
-  const filteredProjects = activeCategory === 'All'
-    ? PORTFOLIO_PROJECTS
-    : PORTFOLIO_PROJECTS.filter(p => p.category === activeCategory);
+  // Filter categories to display
+  const displayedCategories = activeCategory === 'All'
+    ? PORTFOLIO_CATEGORIES
+    : PORTFOLIO_CATEGORIES.filter(c => c.name === activeCategory);
+
+  // Projects per category helper
+  const getProjectsForCategory = (catName: PortfolioCategory): PortfolioProject[] => {
+    return portfolioItems.filter(item => item.category === catName);
+  };
 
   return (
     <section id="portfolio" className="relative py-24 bg-[#07090e] border-b border-white/5 overflow-hidden">
-      {/* Background accents */}
+      {/* Background ambient accents */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-1/4 right-10 w-72 h-72 bg-amber-600/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-12">
-          <div className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Creative Showcase</span>
+          {/* Subtle Branded Kicker */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-xs font-medium mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span className="tracking-wide">Nasiri Production · پورٹ فولیو شوکیس</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Featured Portfolio
+
+          {/* Heading */}
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight font-urdu py-1">
+            <span className="gold-gradient-text">تخلیقی پورٹ فولیو</span>
           </h2>
-          <div className="mt-2 text-lg font-urdu text-amber-300/80">
-            نمونہ جات اور تخلیقی پروجیکٹس
-          </div>
-          <p className="mt-3 text-slate-400 text-sm max-w-2xl">
-            Explore curated creative concepts across AI video generation, prompt engineering, high-CTR YouTube thumbnails, and culturally resonant posters.
+
+          {/* Subtitle */}
+          <p className="mt-2 text-base sm:text-xl font-urdu text-amber-300/90 font-medium">
+            میرے منتخب کردہ حقیقی تخلیقی کام
+          </p>
+          
+          <p className="mt-2 text-xs sm:text-sm text-slate-400 max-w-xl">
+            Authentic creative works by Muhammad Mustafa Nasiri across seven dedicated media and design categories.
           </p>
         </div>
 
-        {/* Category Filters (Clean Segmented Tabs) */}
-        <div className="flex items-center justify-center mb-10 overflow-x-auto pb-2">
-          <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-xl bg-slate-900/90 border border-white/10 shadow-lg">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 text-xs font-medium rounded-lg transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                  activeCategory === cat
-                    ? 'bg-amber-400 text-slate-950 font-bold shadow-md'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+        {/* Category Filters Bar */}
+        <div className="flex items-center justify-center mb-14">
+          <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-white/10 shadow-xl max-w-5xl">
+            {/* "All" Tab */}
+            <button
+              type="button"
+              onClick={() => setActiveCategory('All')}
+              className={`px-3.5 py-2 rounded-xl text-xs transition-all duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                activeCategory === 'All'
+                  ? 'bg-amber-400 text-slate-950 font-bold shadow-md shadow-amber-400/20'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span className="font-urdu text-xs font-semibold">تمام</span>
+              <span className="opacity-75 text-[11px]">/ All</span>
+            </button>
+
+            {/* The 7 Official Categories */}
+            {PORTFOLIO_CATEGORIES.map((cat) => {
+              const isActive = activeCategory === cat.name;
+
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.name)}
+                  className={`px-3.5 py-2 rounded-xl text-xs transition-all duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                    isActive
+                      ? 'bg-amber-400 text-slate-950 font-bold shadow-md shadow-amber-400/20'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="font-urdu text-xs font-semibold">{cat.urduName}</span>
+                  <span className="opacity-75 text-[10px] tracking-tight">({cat.name})</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Notice for Muhammad Mustafa on replacing placeholders */}
-        <div className="max-w-2xl mx-auto mb-10 p-3.5 rounded-xl bg-slate-900/60 border border-amber-400/20 flex items-center justify-between gap-3 text-xs text-slate-300">
-          <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>
-              All items currently use clean visual placeholders. Click <strong>"View Project"</strong> on any card for instructions on dropping in your live YouTube links or image files.
-            </span>
-          </div>
-        </div>
-
-        {/* Portfolio Gallery Grid */}
+        {/* 
+          SEVEN SEPARATE CATEGORY CARDS 
+          Per Section 8 & Section 26: Each category has its own separate, complete card.
+          Each card displays:
+          - Category icon
+          - Category title (English + Urdu)
+          - Short category description
+          - Empty portfolio area
+          - The primary visible Urdu empty-state message: "اس زمرے میں میرا حقیقی کام بہت جلد شامل کیا جائے گا۔"
+          - English fallback: "My real work in this category will be added soon."
+          When projects exist in portfolioItems, they render smoothly inside the card.
+        */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project: PortfolioProject) => {
+          {displayedCategories.map((catConfig: PortfolioCategoryConfig, index: number) => {
+            const projectsInCat = getProjectsForCategory(catConfig.name);
+            const hasProjects = projectsInCat.length > 0;
+
             return (
               <div
-                key={project.id}
-                className="glass-panel glass-panel-hover rounded-2xl overflow-hidden flex flex-col group border border-white/10"
+                key={catConfig.id}
+                className="glass-panel glass-panel-hover rounded-2xl p-6 sm:p-7 flex flex-col justify-between group border border-white/10 relative overflow-hidden transition-all duration-300"
               >
-                {/* Media Placeholder Header Canvas */}
-                <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-slate-900 via-[#0a101d] to-slate-950 border-b border-white/10 flex items-center justify-center p-6 text-center">
-                  
-                  {project.imageSrc ? (
-                    <img 
-                      src={project.imageSrc} 
-                      alt={project.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    />
+                {/* Subtle top accent hairline */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent group-hover:via-amber-400 transition-all" />
+
+                <div>
+                  {/* Category Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 group-hover:scale-105 group-hover:bg-amber-400/20 transition-all">
+                      {getCategoryIcon(catConfig.icon)}
+                    </div>
+                    <span className="text-xs font-mono font-semibold text-slate-500 group-hover:text-amber-400 transition-colors">
+                      Card {index + 1} of 7
+                    </span>
+                  </div>
+
+                  {/* Urdu Category Title */}
+                  <div dir="rtl" className="text-base font-urdu text-amber-300 font-bold mb-1 text-right">
+                    {catConfig.urduName}
+                  </div>
+
+                  {/* English Category Title */}
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                    {catConfig.name}
+                  </h3>
+
+                  {/* Short Category Description */}
+                  <p className="text-xs text-slate-400 leading-relaxed mb-5">
+                    {catConfig.description}
+                  </p>
+
+                  {/* Content Area: If projects exist, render project cards. If empty, render empty state */}
+                  {hasProjects ? (
+                    <div className="space-y-4">
+                      {projectsInCat.map((project) => (
+                        <div
+                          key={project.id}
+                          className="rounded-xl overflow-hidden border border-white/10 bg-slate-950 p-3 group/item cursor-pointer"
+                          onClick={() => setSelectedProject(project)}
+                        >
+                          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black/60 mb-2 flex items-center justify-center">
+                            {project.imageSrc ? (
+                              <img src={project.imageSrc} alt={project.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="flex items-center justify-center">
+                                {project.mediaType === 'video' ? <Play className="w-6 h-6 text-amber-400" /> : <ImageIcon className="w-6 h-6 text-amber-400" />}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-semibold text-white truncate">{project.title}</span>
+                            <Eye className="w-3.5 h-3.5 text-amber-400" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
-                    <div className="relative z-10 flex flex-col items-center justify-center space-y-2.5">
-                      <div className="w-12 h-12 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 group-hover:scale-110 group-hover:bg-amber-400/20 transition-all">
-                        {project.mediaType === 'video' ? (
-                          <Play className="w-6 h-6 fill-amber-400/20 text-amber-400 ml-0.5" />
-                        ) : (
-                          <ImageIcon className="w-6 h-6 text-amber-400" />
-                        )}
+                    /* Clean Empty State Area */
+                    <div className="rounded-xl border-2 border-dashed border-amber-400/25 bg-slate-950/70 p-6 flex flex-col items-center justify-center text-center my-2">
+                      <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 mb-3">
+                        <FolderOpen className="w-5 h-5 text-amber-400" />
                       </div>
-                      <span className="text-[11px] font-medium text-amber-300/90 tracking-wider uppercase font-mono">
-                        {project.mediaType === 'video' ? 'AI Video Concept' : 'Visual Design Asset'}
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        Placeholder Ready
-                      </span>
+
+                      {/* Primary Visible Urdu Message */}
+                      <p className="text-sm sm:text-base font-urdu text-amber-200 font-bold mb-1.5 leading-relaxed text-center">
+                        اس زمرے میں میرا حقیقی کام بہت جلد شامل کیا جائے گا۔
+                      </p>
+
+                      {/* English Fallback */}
+                      <p className="text-[11px] text-slate-400 leading-normal max-w-xs">
+                        My real work in this category will be added soon.
+                      </p>
                     </div>
                   )}
-
-                  {/* Corner format watermark */}
-                  <div className="absolute top-3 right-3 text-[10px] font-mono text-slate-400 bg-black/60 px-2 py-0.5 rounded border border-white/5">
-                    {project.aspectRatio}
-                  </div>
-
-                  {/* Hover Overlay Button */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProject(project)}
-                      className="px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-300 hover:bg-amber-200 rounded-lg shadow-lg flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 cursor-pointer"
-                    >
-                      <Eye className="w-4 h-4 text-slate-950" />
-                      <span>Preview Details</span>
-                    </button>
-                  </div>
                 </div>
 
-                {/* Card Content */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    {/* Metadata Header (Zero-Pill compliant: unboxed text with dot separator) */}
-                    <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
-                      <span className="text-amber-400 font-semibold">{project.category}</span>
-                      <span aria-hidden="true" className="text-slate-600">·</span>
-                      <span>Nasiri Production</span>
-                    </div>
-
-                    {/* Urdu Title if available */}
-                    {project.urduTitle && (
-                      <div dir="rtl" className="text-xs font-urdu text-amber-300/80 mb-1">
-                        {project.urduTitle}
-                      </div>
-                    )}
-
-                    {/* Project Title */}
-                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                      {project.title}
-                    </h3>
-
-                    {/* Short Description */}
-                    <p className="text-xs text-slate-400 leading-relaxed mb-4 line-clamp-3">
-                      {project.description}
-                    </p>
-                  </div>
-
-                  {/* Bottom Action */}
-                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
-                      <span>{project.tags[0]}</span>
-                      {project.tags[1] && (
-                        <>
-                          <span aria-hidden="true">/</span>
-                          <span>{project.tags[1]}</span>
-                        </>
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProject(project)}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-300 hover:text-amber-200 group/btn cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded p-1"
-                    >
-                      <span>View Project</span>
-                      <Eye className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
+                {/* Card Footer */}
+                <div className="mt-5 pt-3.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+                  <span className="font-urdu text-amber-300/80">ناصری پروڈکشن</span>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    {hasProjects ? `${projectsInCat.length} Project(s)` : 'Empty State Ready'}
+                  </span>
                 </div>
 
               </div>
@@ -193,7 +231,7 @@ export function Portfolio() {
 
       </div>
 
-      {/* Project Detail Modal */}
+      {/* Project Detail Lightbox Modal */}
       <ProjectModal 
         project={selectedProject} 
         onClose={() => setSelectedProject(null)} 

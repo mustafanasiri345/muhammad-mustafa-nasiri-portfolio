@@ -1,160 +1,185 @@
-import { X, Play, Image as ImageIcon, ExternalLink, Code2, Tag, Check, Copy } from 'lucide-react';
-import { useState } from 'react';
-import { PortfolioProject } from '../data/portfolioData';
+import { X, Play, Image as ImageIcon, ExternalLink, Calendar, Tag } from 'lucide-react';
+import { useEffect } from 'react';
+import { PortfolioProject, PORTFOLIO_CATEGORIES } from '../data/portfolioData';
 
 interface ProjectModalProps {
   project: PortfolioProject | null;
   onClose: () => void;
 }
 
+function getYoutubeEmbedUrl(url?: string): string | null {
+  if (!url) return null;
+  // Match youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID, youtube.com/shorts/ID
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const match = url.match(regExp);
+  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0` : null;
+}
+
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
-  const [copiedSnippet, setCopiedSnippet] = useState(false);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   if (!project) return null;
 
-  const replaceSnippet = `// In /src/data/portfolioData.ts (id: "${project.id}"):
-{
-  id: "${project.id}",
-  title: "${project.title}",
-  category: "${project.category}",
-  imageSrc: "https://your-domain.com/your-media-file.jpg", // <-- Insert your image/video URL here
-  ...
-}`;
+  const youtubeEmbedUrl = project.videoSrc ? getYoutubeEmbedUrl(project.videoSrc) : null;
+  const isDirectVideo = project.videoSrc && (
+    project.videoSrc.endsWith('.mp4') || 
+    project.videoSrc.endsWith('.webm') || 
+    project.videoSrc.endsWith('.ogg') ||
+    project.videoSrc.includes('blob:') ||
+    project.videoSrc.includes('/video')
+  );
 
-  const handleCopySnippet = () => {
-    navigator.clipboard.writeText(replaceSnippet);
-    setCopiedSnippet(true);
-    setTimeout(() => setCopiedSnippet(false), 2500);
-  };
+  const categoryConfig = PORTFOLIO_CATEGORIES.find(c => c.name === project.category);
+  const urduCategoryLabel = categoryConfig ? categoryConfig.urduName : project.category;
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-fade-in"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
     >
       <div 
-        className="relative w-full max-w-3xl rounded-2xl bg-[#0c1220] border border-amber-400/30 p-6 sm:p-8 shadow-2xl overflow-hidden my-8"
+        className="relative w-full max-w-4xl rounded-2xl bg-[#0a0f1d] border border-amber-400/30 p-5 sm:p-7 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 transition-colors z-20 cursor-pointer"
+          className="absolute top-4 right-4 p-2.5 rounded-xl text-slate-300 hover:text-white bg-slate-900/90 hover:bg-slate-800 border border-white/10 transition-colors z-30 cursor-pointer shadow-lg"
           aria-label="Close modal"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Modal Media Placeholder Canvas */}
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-white/10 mb-6 flex flex-col items-center justify-center p-6 text-center group">
-          {project.imageSrc ? (
+        {/* Media Player / Lightbox Area */}
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-white/10 mb-5 flex items-center justify-center shrink-0">
+          {project.mediaType === 'video' && youtubeEmbedUrl ? (
+            <iframe
+              src={youtubeEmbedUrl}
+              title={project.title}
+              className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : project.mediaType === 'video' && isDirectVideo ? (
+            <video
+              src={project.videoSrc}
+              poster={project.imageSrc}
+              controls
+              autoPlay
+              className="w-full h-full object-contain bg-black"
+            >
+              Your browser does not support HTML5 video.
+            </video>
+          ) : project.imageSrc ? (
             <img 
               src={project.imageSrc} 
               alt={project.title} 
-              className="w-full h-full object-cover" 
+              className="w-full h-full object-contain bg-black/90" 
             />
+          ) : project.videoSrc ? (
+            <div className="flex flex-col items-center justify-center p-6 text-center space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                <Play className="w-7 h-7 fill-amber-400/20 text-amber-300 ml-0.5" />
+              </div>
+              <p className="text-sm text-slate-300 font-medium">Video preview available at external link</p>
+              <a
+                href={project.videoSrc}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-400 text-slate-950 font-bold text-xs hover:bg-amber-300 transition-colors"
+              >
+                <span>Watch Video</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
           ) : (
-            <div className="relative z-10 flex flex-col items-center max-w-md space-y-3">
-              <div className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300 shadow-inner">
-                {project.mediaType === 'video' ? (
-                  <Play className="w-8 h-8 fill-amber-400/20 text-amber-400 ml-1" />
-                ) : (
-                  <ImageIcon className="w-8 h-8 text-amber-400" />
-                )}
+            <div className="flex flex-col items-center justify-center p-6 text-center space-y-2">
+              <div className="w-12 h-12 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300">
+                {project.mediaType === 'video' ? <Play className="w-6 h-6" /> : <ImageIcon className="w-6 h-6" />}
               </div>
-              <div className="text-sm font-semibold text-white">
-                {project.mediaType === 'video' ? 'AI Video Project Placeholder' : 'Visual Artwork Placeholder'}
-              </div>
-              <p className="text-xs text-slate-400">
-                "{project.title}"
-              </p>
-              <div className="text-[11px] text-amber-300/80 bg-amber-400/10 px-3 py-1 rounded-md border border-amber-400/20">
-                Ready for user upload • Nasiri Production Showcase
-              </div>
+              <p className="text-xs text-slate-400">Media file ready to attach in portfolioData.ts</p>
             </div>
           )}
-
-          {/* Grid decor lines */}
-          <div 
-            className="absolute inset-0 opacity-10 pointer-events-none"
-            style={{ 
-              backgroundImage: 'radial-gradient(circle at 1px 1px, #d4af37 1px, transparent 0)',
-              backgroundSize: '24px 24px' 
-            }}
-          />
         </div>
 
-        {/* Project Header Info */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
-              <span className="text-amber-400 font-medium">{project.category}</span>
-              <span aria-hidden="true">·</span>
-              <span>Nasiri Production Archive</span>
-              <span aria-hidden="true">·</span>
-              <span className="uppercase text-[10px] font-mono">{project.aspectRatio} format</span>
+        {/* Details Section (Scrollable if content is tall) */}
+        <div className="overflow-y-auto space-y-4 pr-1">
+          {/* Header Metadata */}
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-xs text-slate-400 mb-1.5 flex-wrap">
+                <span className="text-amber-400 font-semibold">{project.category}</span>
+                <span aria-hidden="true" className="text-slate-600">·</span>
+                <span className="font-urdu text-amber-300/90">{urduCategoryLabel}</span>
+                <span aria-hidden="true" className="text-slate-600">·</span>
+                <span>Nasiri Production</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                {project.title}
+              </h3>
             </div>
-            <h3 className="text-2xl font-bold text-white">
-              {project.title}
-            </h3>
+
+            {project.urduTitle && (
+              <div dir="rtl" className="text-right sm:max-w-xs">
+                <span className="text-lg font-urdu text-amber-300 font-semibold block leading-relaxed">
+                  {project.urduTitle}
+                </span>
+              </div>
+            )}
           </div>
 
-          {project.urduTitle && (
-            <div dir="rtl" className="text-right">
-              <span className="text-base font-urdu text-amber-300 font-medium block">
-                {project.urduTitle}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Description */}
-        <div className="space-y-3 text-slate-300 text-sm leading-relaxed mb-6">
-          <p>{project.description}</p>
-          {project.urduDescription && (
-            <div dir="rtl" className="p-3 rounded-lg bg-black/30 border border-white/5 text-amber-200/90 font-urdu text-base leading-[2.1]">
-              {project.urduDescription}
-            </div>
-          )}
-        </div>
-
-        {/* Tags */}
-        <div className="flex flex-wrap items-center gap-2 mb-6">
-          <Tag className="w-3.5 h-3.5 text-amber-400" />
-          <span className="text-xs text-slate-400">Keywords:</span>
-          {project.tags.map((tag, idx) => (
-            <span key={idx} className="text-xs text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-md border border-white/5">
-              #{tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Developer / Owner Replacement Helper */}
-        <div className="p-4 rounded-xl bg-slate-950 border border-amber-400/20 text-xs">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 font-medium text-amber-300">
-              <Code2 className="w-4 h-4 text-amber-400" />
-              <span>How to replace this placeholder with your photo/video:</span>
-            </div>
-            <button
-              onClick={handleCopySnippet}
-              type="button"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 transition-colors cursor-pointer"
-            >
-              {copiedSnippet ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedSnippet ? 'Copied!' : 'Copy Code'}</span>
-            </button>
+          {/* Description Block */}
+          <div className="space-y-2.5 text-slate-300 text-sm leading-relaxed">
+            <p className="text-slate-300">{project.description}</p>
+            {project.urduDescription && (
+              <div dir="rtl" className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5 text-amber-200/90 font-urdu text-base leading-[2.1]">
+                {project.urduDescription}
+              </div>
+            )}
           </div>
-          <p className="text-slate-400 leading-normal mb-2 text-[11px]">
-            Open <code className="text-amber-200">/src/data/portfolioData.ts</code>, find item with <code className="text-amber-200">"{project.id}"</code> and add your real image or video URL to the <code className="text-amber-200">imageSrc</code> property.
-          </p>
-          <pre className="p-2 rounded bg-black/60 font-mono text-[10px] text-slate-300 overflow-x-auto">
-            {replaceSnippet}
-          </pre>
+
+          {/* Tags */}
+          {project.tags && project.tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <Tag className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              {project.tags.map((tag, idx) => (
+                <span key={idx} className="text-xs text-slate-300 bg-slate-900/90 px-2.5 py-1 rounded-md border border-white/10 font-mono text-[11px]">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* External Action Button */}
+          {project.projectUrl && (
+            <div className="pt-2 flex items-center justify-between border-t border-white/10">
+              <span className="text-xs text-slate-400">External project resource:</span>
+              <a
+                href={project.projectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-lg transition-colors cursor-pointer"
+              >
+                <span>پروجیکٹ دیکھیں / Open Project</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          )}
         </div>
 
       </div>
     </div>
   );
 }
+

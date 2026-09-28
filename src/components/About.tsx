@@ -1,13 +1,13 @@
-import { MapPin, Sparkles, Video, BookOpen, Compass, Cpu } from 'lucide-react';
+import { MapPin, Sparkles, Video, BookOpen, Brain, Palette } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 
 export function About() {
-  const pillars = [
+  const creativeFocusAreas = [
     {
-      title: 'Artificial Intelligence',
-      urdu: 'مصنوعی ذہانت (AI)',
+      title: 'AI Content Creation',
+      urdu: 'اے آئی مواد سازی',
       desc: 'Exploring prompt engineering, generative video models, and synthetic imagery workflows.',
-      icon: Cpu,
+      icon: Brain,
     },
     {
       title: 'Digital Media & Video',
@@ -16,16 +16,16 @@ export function About() {
       icon: Video,
     },
     {
-      title: 'Educational & Islamic Content',
-      urdu: 'تعلیمی اور اسلامی مواد',
-      desc: 'Curating respectful, spiritually inspiring, and knowledge-driven digital visual media.',
-      icon: BookOpen,
+      title: 'Graphic & Poster Design',
+      urdu: 'گرافک و پوسٹر ڈیزائننگ',
+      desc: 'High-CTR YouTube thumbnails, social banners, and expressive bilingual typography.',
+      icon: Palette,
     },
     {
-      title: 'Rooted in Skardu, GB',
-      urdu: 'سکردو، گلگت بلتستان',
-      desc: 'Bringing a fresh creative perspective from the breathtaking valleys of northern Pakistan.',
-      icon: Compass,
+      title: 'Islamic & Educational Media',
+      urdu: 'اسلامی و تعلیمی میڈیا',
+      desc: 'Curating respectful, spiritually inspiring, and knowledge-driven digital visual content.',
+      icon: BookOpen,
     },
   ];
 
@@ -43,13 +43,13 @@ export function About() {
         <div className="flex flex-col items-center text-center mb-16">
           <div className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Profile & Ethos</span>
+            <span>Profile & Identity</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             About Me
           </h2>
-          <div className="mt-2 text-lg font-urdu text-amber-300/80">
-            تعارف و پس منظر
+          <div className="mt-2 text-xl font-urdu text-amber-300 font-semibold">
+            میرے بارے میں
           </div>
         </div>
 
@@ -57,67 +57,61 @@ export function About() {
         <div className="max-w-4xl mx-auto mb-16">
           <div className="glass-panel rounded-2xl p-6 sm:p-10 border border-amber-500/20 relative shadow-2xl">
             <div className="absolute -top-3 left-8 px-4 py-1 rounded bg-[#07090e] border border-amber-400/40 text-amber-300 text-xs font-semibold tracking-wider">
-              OFFICIAL STATEMENT
+              PROFILE OVERVIEW
             </div>
 
-            {/* Official Urdu Introduction - exact wording provided by user */}
+            {/* Official Urdu Statement - exact information provided */}
             <div dir="rtl" className="mt-4 mb-6">
               <p className="font-urdu text-lg sm:text-xl md:text-2xl text-amber-100 font-normal leading-[2.4] text-right">
                 {PERSONAL_INFO.aboutUrdu}
               </p>
             </div>
 
-            {/* English translation / parallel description without inventing extra facts */}
+            {/* English Description without inventing extra facts */}
             <div className="pt-6 border-t border-white/10 text-slate-300 text-sm sm:text-base leading-relaxed space-y-3">
               <p>
-                My name is <strong className="text-white font-semibold">{PERSONAL_INFO.name}</strong>, based in{' '}
-                <span className="text-amber-300 font-medium">{PERSONAL_INFO.location}</span>. My focus spans Artificial Intelligence, digital media production, video creation, social media content strategies, and the thoughtful curation of educational and Islamic media.
+                {PERSONAL_INFO.aboutEnglish}
               </p>
               <p className="text-slate-400 text-sm">
-                Under <strong className="text-slate-200">{PERSONAL_INFO.brand}</strong>, I utilize modern generative AI technology for creative, educational, and beneficial endeavors, transforming innovative concepts into compelling visual projects.
+                I am committed to utilizing modern digital tools and artificial intelligence responsibly, creating educational, inspiring, and culturally meaningful content for online communities.
               </p>
             </div>
 
-            {/* Location & Origin detail */}
+            {/* Location & Brand Details */}
             <div className="mt-8 pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-2 text-slate-400">
-                <MapPin className="w-4 h-4 text-amber-400" />
-                <span>Origin: <span className="text-slate-200">Skardu, Gilgit-Baltistan, Pakistan</span></span>
+              <div className="flex items-center gap-2 text-slate-300">
+                <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Location: <span className="text-white font-medium">{PERSONAL_INFO.location}</span></span>
               </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <span>Brand: <span className="text-amber-300 font-medium">Nasiri Production (ناصری پروڈکشن)</span></span>
+              <div className="flex items-center gap-2 text-slate-300">
+                <span>Brand: <span className="text-amber-300 font-semibold">{PERSONAL_INFO.brand}</span> ({PERSONAL_INFO.urduBrand})</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 4 Pillars Grid (Domain Focus) */}
+        {/* 4 Creative Focus Areas Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {pillars.map((pillar) => {
-            const Icon = pillar.icon;
+          {creativeFocusAreas.map((area) => {
+            const Icon = area.icon;
             return (
               <div 
-                key={pillar.title}
-                className="glass-panel glass-panel-hover rounded-xl p-6 flex flex-col justify-between"
+                key={area.title}
+                className="glass-panel glass-panel-hover rounded-xl p-6 border border-white/5 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 mb-5 group-hover:scale-105 group-hover:bg-amber-400/20 transition-all">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-base font-bold text-white mb-1">
-                    {pillar.title}
-                  </h3>
-                  <div dir="rtl" className="text-xs font-urdu text-amber-300/80 mb-3">
-                    {pillar.urdu}
+                  <div dir="rtl" className="text-xs font-urdu text-amber-300/80 mb-1">
+                    {area.urdu}
                   </div>
+                  <h3 className="text-base font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                    {area.title}
+                  </h3>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    {pillar.desc}
+                    {area.desc}
                   </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>Creative Discipline</span>
-                  <span className="text-amber-400/80 font-mono">0{pillars.indexOf(pillar) + 1}</span>
                 </div>
               </div>
             );

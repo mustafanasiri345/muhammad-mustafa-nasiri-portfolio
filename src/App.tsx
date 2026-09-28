@@ -3,7 +3,6 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Skills } from './components/Skills';
-import { NasiriProduction } from './components/NasiriProduction';
 import { Services } from './components/Services';
 import { Portfolio } from './components/Portfolio';
 import { MediaSection } from './components/MediaSection';
@@ -16,7 +15,7 @@ export default function App() {
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const sectionIds = ['home', 'about', 'skills', 'nasiri-production', 'services', 'portfolio', 'media', 'contact'];
+    const sectionIds = ['home', 'about', 'skills', 'services', 'portfolio', 'media', 'contact'];
     
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 140;
@@ -47,30 +46,27 @@ export default function App() {
       {/* Sticky Navigation */}
       <Navbar activeSection={activeSection} />
 
-      {/* Main Content Sections */}
+      {/* Main Content Sections matching the 7 nav links */}
       <main className="flex-1">
-        {/* 1. Hero Section */}
+        {/* 1. Hero / Home */}
         <Hero />
 
-        {/* 2. About Me Section */}
+        {/* 2. About Me */}
         <About />
 
-        {/* 3. Skills Section (11 Skills) */}
+        {/* 3. My Skills (10 Skills) */}
         <Skills />
 
-        {/* 4. Nasiri Production Branded Section */}
-        <NasiriProduction />
-
-        {/* 5. Services Section (8 Services) */}
+        {/* 4. My Services (9 Services) */}
         <Services onSelectService={handleSelectService} />
 
-        {/* 6. Filterable Portfolio Section */}
+        {/* 5. Creative Portfolio (7 Category Cards) */}
         <Portfolio />
 
-        {/* 7. Media / Find Me Online Section */}
+        {/* 6. Media & Social Media Channels */}
         <MediaSection />
 
-        {/* 8. Contact Section with Form Validation */}
+        {/* 7. Contact Me */}
         <Contact prefilledService={selectedServiceForInquiry} />
       </main>
 

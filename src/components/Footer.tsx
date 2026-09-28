@@ -1,5 +1,5 @@
-import { ArrowUp } from 'lucide-react';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { ArrowUp, Phone, MessageCircle, Mail, MapPin } from 'lucide-react';
+import { PERSONAL_INFO, SOCIAL_LINKS } from '../data/portfolioData';
 
 export function Footer() {
   const scrollToTop = () => {
@@ -10,13 +10,13 @@ export function Footer() {
   };
 
   const navLinks = [
-    { label: 'Home', href: '#home' },
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Services', href: '#services' },
-    { label: 'Portfolio', href: '#portfolio' },
-    { label: 'Media', href: '#media' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Home', href: '#home', urdu: 'ہوم' },
+    { label: 'About', href: '#about', urdu: 'تعارف' },
+    { label: 'Skills', href: '#skills', urdu: 'مہارتیں' },
+    { label: 'Services', href: '#services', urdu: 'خدمات' },
+    { label: 'Portfolio', href: '#portfolio', urdu: 'پورٹ فولیو' },
+    { label: 'Media', href: '#media', urdu: 'میڈیا' },
+    { label: 'Contact', href: '#contact', urdu: 'رابطہ' },
   ];
 
   return (
@@ -28,14 +28,13 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main Footer Row */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-12 border-b border-white/5">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-white/5">
           
-          {/* Brand Info */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            
+          {/* Brand & Name Info (cols 1-5) */}
+          <div className="md:col-span-5 flex flex-col items-start text-left">
             {/* Urdu Name */}
             <div dir="rtl" className="mb-1">
-              <span className="text-2xl sm:text-3xl font-urdu text-amber-300 font-semibold drop-shadow-md">
+              <span className="text-2xl sm:text-3xl font-urdu text-amber-300 font-bold drop-shadow-md">
                 {PERSONAL_INFO.urduName}
               </span>
             </div>
@@ -56,56 +55,111 @@ export function Footer() {
               </span>
             </div>
 
-            {/* Tagline specified by user: "AI • Digital Media • Creative Content" */}
-            <p className="mt-2 text-xs text-slate-400 tracking-wider">
+            {/* Location */}
+            <p className="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>{PERSONAL_INFO.location}</span>
+            </p>
+
+            {/* Tagline */}
+            <p className="text-xs text-slate-500 mt-3 italic">
               "{PERSONAL_INFO.tagline}"
             </p>
-
-            {/* Origin Location */}
-            <p className="text-[11px] text-slate-500 mt-1">
-              {PERSONAL_INFO.location}
-            </p>
           </div>
 
-          {/* Quick Nav Links */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-300">
-            {navLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="hover:text-amber-300 transition-colors"
+          {/* Navigation Links (cols 6-8) */}
+          <div className="md:col-span-3 flex flex-col items-start">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4 font-mono">
+              Navigation
+            </h4>
+            <ul className="space-y-2.5 text-xs">
+              {navLinks.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    className="hover:text-amber-300 transition-colors flex items-center gap-2"
+                  >
+                    <span>{item.label}</span>
+                    <span className="text-[10px] text-slate-600 font-urdu">{item.urdu}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Information & Social Placeholders (cols 9-12) */}
+          <div className="md:col-span-4 flex flex-col items-start">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4 font-mono">
+              Contact & Social Channels
+            </h4>
+
+            {/* Contact Items */}
+            <div className="space-y-2 text-xs mb-6 w-full">
+              <a 
+                href={PERSONAL_INFO.telUrl} 
+                className="flex items-center gap-2.5 text-slate-300 hover:text-amber-300 transition-colors"
               >
-                {item.label}
+                <Phone className="w-3.5 h-3.5 text-amber-400" />
+                <span className="font-mono">{PERSONAL_INFO.phone}</span>
               </a>
-            ))}
-          </div>
 
-          {/* Back to top button */}
-          <div>
-            <button
-              type="button"
-              onClick={scrollToTop}
-              className="p-3 rounded-xl bg-slate-900 border border-white/10 hover:border-amber-400/40 text-slate-300 hover:text-amber-300 transition-all flex items-center gap-2 text-xs font-medium cursor-pointer"
-              aria-label="Back to Top"
-            >
-              <span>Back to Top</span>
-              <ArrowUp className="w-4 h-4 text-amber-400" />
-            </button>
+              <a 
+                href={PERSONAL_INFO.whatsappUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 text-slate-300 hover:text-emerald-300 transition-colors"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="font-mono">{PERSONAL_INFO.whatsapp}</span>
+              </a>
+
+              <a 
+                href={PERSONAL_INFO.mailUrl} 
+                className="flex items-center gap-2.5 text-slate-300 hover:text-amber-300 transition-colors truncate max-w-full"
+              >
+                <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="font-mono truncate">{PERSONAL_INFO.email}</span>
+              </a>
+            </div>
+
+            {/* Social Media Link Placeholders */}
+            <div className="flex flex-wrap gap-2">
+              {SOCIAL_LINKS.map((link) => (
+                <span
+                  key={link.name}
+                  className="px-2.5 py-1 rounded bg-slate-900 border border-white/5 text-[11px] text-slate-300"
+                >
+                  {link.name}
+                </span>
+              ))}
+            </div>
+
+            {/* Back to Top */}
+            <div className="mt-6 pt-4 border-t border-white/5 w-full">
+              <button
+                type="button"
+                onClick={scrollToTop}
+                className="inline-flex items-center gap-2 text-xs font-medium text-amber-300 hover:text-amber-200 cursor-pointer"
+              >
+                <span>Back to Top</span>
+                <ArrowUp className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
         </div>
 
         {/* Bottom Copyright Row */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-left">
-          <p>
-            Copyright © 2026 Muhammad Mustafa Nasiri. All Rights Reserved.
+          <p className="font-sans">
+            {PERSONAL_INFO.copyright}
           </p>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>Personal Portfolio</span>
+          <div className="flex items-center gap-3 text-[11px]">
+            <span>Official Portfolio</span>
             <span className="text-slate-700">·</span>
             <span>Skardu, Gilgit-Baltistan</span>
             <span className="text-slate-700">·</span>
-            <span className="text-amber-400/80">Nasiri Production</span>
+            <span className="text-amber-400">ناصری پروڈکشن</span>
           </div>
         </div>
 

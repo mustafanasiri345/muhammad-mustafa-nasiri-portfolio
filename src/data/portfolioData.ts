@@ -1,39 +1,79 @@
+export type PortfolioCategory =
+  | 'AI Videos'
+  | 'YouTube Thumbnails'
+  | 'Social Media Posters'
+  | 'Islamic & Religious Designs'
+  | 'AI Images'
+  | 'Video Editing'
+  | 'Graphic Design';
+
+export interface PortfolioCategoryConfig {
+  id: string;
+  name: PortfolioCategory;
+  urduName: string;
+  description: string;
+  urduDescription: string;
+  icon: string;
+}
+
 export interface PortfolioProject {
   id: string;
   title: string;
   urduTitle?: string;
-  category: 'AI Videos' | 'AI Images' | 'Posters' | 'Thumbnails' | 'Social Media' | 'Educational';
+  category: PortfolioCategory;
   description: string;
   urduDescription?: string;
-  thumbnailPlaceholderColor: string;
-  mediaType: 'video' | 'image';
-  // Users can replace this with their actual image URL e.g. "/images/my-project.jpg"
-  imageSrc?: string;
-  tags: string[];
-  aspectRatio: '16/9' | '1/1' | '9/16' | '4/5';
+  mediaType: 'image' | 'video';
+  imageSrc?: string; // Image file URL or Video thumbnail (e.g. /assets/portfolio/...)
+  videoSrc?: string; // Direct video file URL (.mp4/.webm) or YouTube/Vimeo link
+  projectUrl?: string; // External project link (YouTube, Behance, Facebook, etc.)
+  tags?: string[];
+  aspectRatio?: '16/9' | '1/1' | '9/16' | '4/5';
 }
 
 export interface SkillItem {
   id: string;
   name: string;
-  urduName?: string;
-  category: 'AI & Generative' | 'Video & Media' | 'Design & Creative' | 'Content & Education';
-  icon: string;
+  urduName: string;
   description: string;
-  focusLevel: 'Core Specialization' | 'Advanced' | 'Expert Focus' | 'Specialized';
-  tools: string[];
+  icon: string;
+  categoryLabel?: string;
 }
 
 export interface ServiceItem {
   id: string;
   number: string;
   title: string;
-  urduTitle?: string;
+  urduTitle: string;
   shortDesc: string;
-  deliverables: string[];
+  urduDesc?: string;
   icon: string;
 }
 
+export interface MediaPlaceholderItem {
+  id: string;
+  title: string;
+  urduTitle: string;
+  type: 'Videos' | 'Reels' | 'Social Media Content' | 'Featured Media';
+  description: string;
+  icon: string;
+  aspectRatio: string;
+}
+
+export interface SocialLinkItem {
+  name: string;
+  urduName: string;
+  url: string;
+  handle: string;
+  icon: 'facebook' | 'youtube' | 'tiktok' | 'instagram' | 'whatsapp';
+  color: string;
+  description: string;
+  isConfigured: boolean;
+}
+
+/* ==================================================
+   CENTRALIZED PERSONAL & BRAND INFORMATION
+   ================================================== */
 export const PERSONAL_INFO = {
   name: 'Muhammad Mustafa Nasiri',
   urduName: 'محمد مصطفیٰ ناصری',
@@ -41,401 +81,376 @@ export const PERSONAL_INFO = {
   urduBrand: 'ناصری پروڈکشن',
   location: 'Skardu, Gilgit-Baltistan, Pakistan',
   urduLocation: 'سکردو، گلگت بلتستان، پاکستان',
-  headline: 'AI Content Creator | Digital Media Creator | Nasiri Production',
+  profileImagePath: '/assets/profile.jpg',
   roles: [
     'AI Content Creator',
     'Digital Media Creator',
     'AI Video Creator',
     'Social Media Content Creator',
-    'Graphic/Poster & Thumbnail Creator',
+    'Graphic / Poster / Thumbnail Creator',
     'Islamic & Educational Content Creator',
-    'Media/Content Professional'
+    'Video Editor',
+    'AI Prompt Writer'
   ],
-  heroIntroUrdu: 'میں AI، ڈیجیٹل میڈیا اور تخلیقی مواد کے ذریعے جدید انداز میں آئیڈیاز کو حقیقت میں تبدیل کرنے پر کام کرتا ہوں۔',
-  aboutUrdu: 'میرا نام محمد مصطفیٰ ناصری ہے اور میرا تعلق سکردو، گلگت بلتستان سے ہے۔ مجھے Artificial Intelligence، ڈیجیٹل میڈیا، ویڈیو کریئیٹنگ، سوشل میڈیا اور تعلیمی و اسلامی مواد کی تیاری میں دلچسپی ہے۔ میں جدید AI ٹیکنالوجی کو تخلیقی اور مفید مقاصد کے لیے استعمال کرتے ہوئے مختلف ڈیجیٹل پروجیکٹس پر کام کرتا ہوں۔',
-  nasiriProductionUrdu: 'ناصری پروڈکشن ایک ڈیجیٹل کریئیٹو برانڈ ہے جہاں AI ویڈیوز، سوشل میڈیا پوسٹرز، YouTube thumbnails اور مختلف ڈیجیٹل میڈیا پروجیکٹس پر کام کیا جاتا ہے۔',
+  heroIntroUrdu: 'میں AI Content Creation، Digital Media، AI Video، Graphic Design، Social Media Content اور Islamic & Educational Creative Work پر کام کرتا ہوں۔',
+  heroIntroEnglish: 'Specializing in AI Content Creation, Digital Media, AI Video Generation, Graphic Design, Social Media Content, and Islamic & Educational Creative Work.',
+  aboutUrdu: 'میرا نام محمد مصطفیٰ ناصری ہے اور میرا تعلق سکردو، گلگت بلتستان، پاکستان سے ہے۔ ناصری پروڈکشن (Nasiri Production) کے تحت میں AI Content Creation، ڈیجیٹل میڈیا پروڈکشن، ویڈیو ایڈیٹنگ، سوشل میڈیا گرافکس، یوٹیوب تھمبنیلز اور دینی و تعلیمی تخلیقی مواد پر پیشہ ورانہ کام کرتا ہوں۔',
+  aboutEnglish: 'My name is Muhammad Mustafa Nasiri, based in Skardu, Gilgit-Baltistan, Pakistan. Under the brand Nasiri Production, I focus on AI Content Creation, digital media production, video editing, social media graphics, YouTube thumbnail design, and Islamic & educational creative content.',
   tagline: 'AI • Digital Media • Creative Content',
-  contactPlaceholders: {
-    email: 'EMAIL_HERE',
-    phone: 'PHONE_HERE'
-  }
+  phone: '03555677577',
+  whatsapp: '03408816926',
+  email: 'mustafanasiri345@gmail.com',
+  telUrl: 'tel:03555677577',
+  whatsappUrl: 'https://wa.me/923408816926',
+  mailUrl: 'mailto:mustafanasiri345@gmail.com',
+  copyright: '© 2026 Muhammad Mustafa Nasiri | Nasiri Production. All Rights Reserved.'
 };
 
-export const SOCIAL_LINKS = [
-  {
-    name: 'YouTube',
-    urduName: 'یوٹیوب',
-    url: '#SOCIAL_LINK_HERE',
-    handle: '@NasiriProduction',
-    icon: 'youtube',
-    color: '#FF0000',
-    description: 'AI Videos, Documentaries & Educational Series'
-  },
-  {
-    name: 'Facebook',
-    urduName: 'فیس بک',
-    url: '#SOCIAL_LINK_HERE',
-    handle: 'Muhammad Mustafa Nasiri',
-    icon: 'facebook',
-    color: '#1877F2',
-    description: 'Community Updates & Social Content'
-  },
-  {
-    name: 'Instagram',
-    urduName: 'انسٹاگرام',
-    url: '#SOCIAL_LINK_HERE',
-    handle: '@mustafa_nasiri',
-    icon: 'instagram',
-    color: '#E4405F',
-    description: 'Visual Posters, AI Art & Behind the scenes'
-  },
-  {
-    name: 'TikTok',
-    urduName: 'ٹک ٹاک',
-    url: '#SOCIAL_LINK_HERE',
-    handle: '@nasiriproduction',
-    icon: 'tiktok',
-    color: '#00f2fe',
-    description: 'Short-form AI Videos & Viral Clips'
-  },
-  {
-    name: 'WhatsApp',
-    urduName: 'واٹس ایپ',
-    url: '#SOCIAL_LINK_HERE',
-    handle: 'Direct Inquiries',
-    icon: 'whatsapp',
-    color: '#25D366',
-    description: 'Fast Inquiries & Collaboration'
-  }
-];
-
+/* ==================================================
+   THE EXACT 10 SKILLS (NO FAKE PERCENTAGES)
+   ================================================== */
 export const SKILLS_DATA: SkillItem[] = [
   {
-    id: 'ai-content',
+    id: 'ai-content-creation',
     name: 'AI Content Creation',
-    urduName: 'اے آئی مواد سازی',
-    category: 'AI & Generative',
-    icon: 'Brain',
-    description: 'End-to-end creation of intelligent digital content leveraging advanced generative AI models.',
-    focusLevel: 'Core Specialization',
-    tools: ['Claude', 'Gemini', 'ChatGPT', 'AI Workflows']
+    urduName: 'اے آئی کنٹینٹ کریشن',
+    description: 'Developing high-quality digital content combining generative AI text, imagery, and multi-modal creative workflows.',
+    icon: 'Brain'
   },
   {
-    id: 'ai-video',
-    name: 'AI Video Generation',
-    urduName: 'اے آئی ویڈیو جنریشن',
-    category: 'AI & Generative',
-    icon: 'Film',
-    description: 'Transforming script concepts into rich, cinematic generative video sequences and animations.',
-    focusLevel: 'Core Specialization',
-    tools: ['Runway Gen-3', 'Luma Dream Machine', 'Kling', 'Pika']
+    id: 'ai-video-creation',
+    name: 'AI Video Creation',
+    urduName: 'اے آئی ویڈیو کریشن',
+    description: 'Generating cinematic AI motion clips, visual scene sequences, and prompt-driven video compositions.',
+    icon: 'Film'
   },
   {
-    id: 'ai-image',
-    name: 'AI Image Generation',
-    urduName: 'اے آئی تصویر سازی',
-    category: 'AI & Generative',
-    icon: 'Image',
-    description: 'Crafting high-resolution visual assets, realistic portraits, and conceptual digital artwork.',
-    focusLevel: 'Core Specialization',
-    tools: ['Midjourney', 'Stable Diffusion', 'FLUX', 'DALL-E 3']
+    id: 'digital-media-creation',
+    name: 'Digital Media Creation',
+    urduName: 'ڈیجیٹل میڈیا کریشن',
+    description: 'Producing coherent digital media assets, banners, audio-visual synchrony, and multi-platform materials.',
+    icon: 'Tv'
   },
   {
-    id: 'prompt-eng',
-    name: 'Prompt Engineering',
-    urduName: 'پرامپٹ انجینئرنگ',
-    category: 'AI & Generative',
-    icon: 'Terminal',
-    description: 'Synthesizing precise natural language instructions for image, video, and text generation outputs.',
-    focusLevel: 'Advanced',
-    tools: ['Context Crafting', 'Negative Prompts', 'Parameter Tuning', 'Multi-modal Prompts']
+    id: 'social-media-content-creation',
+    name: 'Social Media Content Creation',
+    urduName: 'سوشل میڈیا کنٹینٹ کریشن',
+    description: 'Designing high-impact, audience-engaging visual content optimized for YouTube, Facebook, Instagram, and TikTok.',
+    icon: 'Share2'
   },
   {
-    id: 'video-content',
-    name: 'Video Content',
-    urduName: 'ویڈیو کنٹینٹ پروڈکشن',
-    category: 'Video & Media',
-    icon: 'Video',
-    description: 'Post-production, pacing, transitions, and audio sync for cohesive storytelling videos.',
-    focusLevel: 'Advanced',
-    tools: ['Premiere Pro', 'CapCut Pro', 'DaVinci Resolve', 'Audio Mixing']
+    id: 'graphic-design',
+    name: 'Graphic Design',
+    urduName: 'گرافک ڈیزائن',
+    description: 'Crafting clean visual layouts, modern color palettes, typography hierarchy, and creative digital designs.',
+    icon: 'Palette'
   },
   {
-    id: 'social-media',
-    name: 'Social Media Content',
-    urduName: 'سوشل میڈیا کنٹینٹ',
-    category: 'Content & Education',
-    icon: 'Share2',
-    description: 'Platform-optimized content strategies tailored for YouTube, Facebook, Instagram, and TikTok.',
-    focusLevel: 'Expert Focus',
-    tools: ['Trend Analytics', 'Engagement Hooks', 'Format Optimization']
-  },
-  {
-    id: 'poster-design',
-    name: 'Poster Design',
-    urduName: 'پوسٹر ڈیزائننگ',
-    category: 'Design & Creative',
-    icon: 'Palette',
-    description: 'Visual posters with bold typography, balanced hierarchy, and culturally resonant themes.',
-    focusLevel: 'Specialized',
-    tools: ['Photoshop', 'Canva Pro', 'Illustrator', 'Urdu Calligraphy Styling']
-  },
-  {
-    id: 'thumbnail-design',
+    id: 'youtube-thumbnail-design',
     name: 'YouTube Thumbnail Design',
-    urduName: 'یوٹیوب تھمب نیل ڈیزائن',
-    category: 'Design & Creative',
-    icon: 'LayoutTemplate',
-    description: 'High-CTR YouTube thumbnail compositions designed for maximum visual curiosity and clickability.',
-    focusLevel: 'Advanced',
-    tools: ['CTR Optimization', 'Color Contrast', 'Visual Hierarchy', 'Face Expression Staging']
+    urduName: 'یوٹیوب تھمبنیل ڈیزائن',
+    description: 'Engineering high-contrast, attention-grabbing thumbnails designed to maximize click-through rate (CTR).',
+    icon: 'LayoutTemplate'
   },
   {
-    id: 'digital-media',
-    name: 'Digital Media',
-    urduName: 'ڈیجیٹل میڈیا پروڈکشن',
-    category: 'Video & Media',
-    icon: 'Tv',
-    description: 'Comprehensive media production covering graphic banners, audio-visual synchrony, and distribution.',
-    focusLevel: 'Expert Focus',
-    tools: ['Brand Identity', 'Media Assets', 'Cross-Platform Formatting']
+    id: 'social-media-poster-design',
+    name: 'Social Media Poster Design',
+    urduName: 'سوشل میڈیا پوسٹر ڈیزائن',
+    description: 'Designing expressive digital posters for announcements, events, themes, and social campaigns in Urdu & English.',
+    icon: 'Image'
   },
   {
-    id: 'educational-content',
-    name: 'Educational Content',
-    urduName: 'تعلیمی مواد',
-    category: 'Content & Education',
-    icon: 'GraduationCap',
-    description: 'Structured, accessible educational explainers breaking down complex ideas into engaging visuals.',
-    focusLevel: 'Specialized',
-    tools: ['Visual Infographics', 'Conceptual Explainers', 'Urdu Scripting']
+    id: 'islamic-educational-content-creation',
+    name: 'Islamic & Educational Content Creation',
+    urduName: 'اسلامی و تعلیمی مواد سازی',
+    description: 'Curating respectful, aesthetically inspiring Islamic reminders, moral teachings, and educational explainers.',
+    icon: 'BookOpen'
   },
   {
-    id: 'islamic-content',
-    name: 'Islamic Content',
-    urduName: 'اسلامی مواد',
-    category: 'Content & Education',
-    icon: 'BookOpen',
-    description: 'Thoughtful, respectful, and aesthetically inspiring digital Islamic media, reminders, and historical visuals.',
-    focusLevel: 'Specialized',
-    tools: ['Islamic Geometry', 'Quranic Verse Graphics', 'Spiritual Visual Reflections']
+    id: 'video-editing',
+    name: 'Video Editing',
+    urduName: 'ویڈیو ایڈیٹنگ',
+    description: 'Post-production video pacing, clean cuts, audio balance, transitions, subtitles, and export optimization.',
+    icon: 'Video'
+  },
+  {
+    id: 'ai-prompt-writing',
+    name: 'AI Prompt Writing',
+    urduName: 'اے آئی پرامپٹ رائٹنگ',
+    description: 'Formulating structured, precise natural language prompts to achieve reproducible, high-fidelity generative AI outputs.',
+    icon: 'Terminal'
   }
 ];
 
+/* ==================================================
+   THE EXACT 9 SERVICES
+   ================================================== */
 export const SERVICES_DATA: ServiceItem[] = [
   {
     id: 'srv-1',
     number: '01',
-    title: 'AI Video Creation',
-    urduTitle: 'اے آئی ویڈیو پروڈکشن',
-    shortDesc: 'Cinematic AI-generated video sequences, conceptual reels, and synthetic motion graphics customized for your brand.',
-    deliverables: [
-      'High-definition AI-generated video clips',
-      'Script-to-video workflow & motion directing',
-      'Cinematic color grading & ambient sound design'
-    ],
-    icon: 'Film'
+    title: 'AI YouTube Thumbnail Design',
+    urduTitle: 'اے آئی یوٹیوب تھمبنیل ڈیزائن',
+    shortDesc: 'Attention-grabbing, high-contrast thumbnails crafted to boost Click-Through Rate (CTR) and audience retention.',
+    urduDesc: 'یوٹیوب پر ناظرین کی توجہ فوری حاصل کرنے اور کلکس بڑھانے کے لیے جدید اور پرکشش تھمب نیلز۔',
+    icon: 'LayoutTemplate'
   },
   {
     id: 'srv-2',
     number: '02',
-    title: 'AI Image Creation',
-    urduTitle: 'اے آئی تصویر سازی',
-    shortDesc: 'Bespoke conceptual artwork, realistic photo compositions, and tailored graphics created through precision generative AI prompts.',
-    deliverables: [
-      'Ultra high-resolution master graphics',
-      'Custom art styles & character consistency',
-      'Commercial quality digital illustrations'
-    ],
-    icon: 'Image'
+    title: 'Social Media Poster Design',
+    urduTitle: 'سوشل میڈیا پوسٹر ڈیزائن',
+    shortDesc: 'Professional digital posters for announcements, campaigns, events, and thematic storytelling in both Urdu and English.',
+    urduDesc: 'سوشل میڈیا پلیٹ فارمز کے لیے معیاری، باوقار اور دلکش ڈیجیٹل پوسٹرز کی تیاری۔',
+    icon: 'Palette'
   },
   {
     id: 'srv-3',
     number: '03',
-    title: 'YouTube Thumbnail Design',
-    urduTitle: 'یوٹیوب تھمب نیل ڈیزائن',
-    shortDesc: 'Attention-grabbing, high-contrast thumbnails crafted to boost Click-Through Rate (CTR) and audience retention.',
-    deliverables: [
-      'High-impact visual composition',
-      'Clean typography & vibrant highlights',
-      'Mobile & desktop feed tested variants'
-    ],
-    icon: 'Tv'
+    title: 'AI Video Creation',
+    urduTitle: 'اے آئی ویڈیو کریشن',
+    shortDesc: 'Cinematic AI-generated video sequences, conceptual reels, and synthetic motion graphics customized for your brand.',
+    urduDesc: 'جدید اے آئی ٹیکنالوجی سے بنی سنیمیٹک ویڈیوز، شارٹ ریلز اور بصری مواد۔',
+    icon: 'Film'
   },
   {
     id: 'srv-4',
     number: '04',
-    title: 'Social Media Poster Design',
-    urduTitle: 'سوشل میڈیا پوسٹرز',
-    shortDesc: 'Professional digital posters for announcements, campaigns, events, and thematic storytelling in both Urdu and English.',
-    deliverables: [
-      'Square, story & banner aspect ratios',
-      'Bilingual Urdu/English typography pairing',
-      'Consistent branded aesthetic'
-    ],
-    icon: 'Palette'
+    title: 'AI Content Creation',
+    urduTitle: 'اے آئی کنٹینٹ کریشن',
+    shortDesc: 'End-to-end intelligent content creation leveraging cutting-edge generative AI models and workflows.',
+    urduDesc: 'جدید مصنوعی ذہانت (AI) کے ذریعے تخلیقی، مفید اور معلوماتی ڈیجیٹل مواد کی تیاری۔',
+    icon: 'Brain'
   },
   {
     id: 'srv-5',
     number: '05',
-    title: 'Social Media Content',
-    urduTitle: 'سوشل میڈیا مواد',
-    shortDesc: 'Strategic digital assets designed to connect with target audiences across Facebook, YouTube, Instagram, and TikTok.',
-    deliverables: [
-      'Engaging visual carousels & infographics',
-      'Audience-centric topic curation',
-      'Brand continuity & tone matching'
-    ],
-    icon: 'Share2'
+    title: 'Video Editing',
+    urduTitle: 'ویڈیو ایڈیٹنگ',
+    shortDesc: 'Professional post-production, dynamic pacing, smooth cuts, sound design, and color grading for videos.',
+    urduDesc: 'یوٹیوب، ریلز اور ڈاکومنٹری ویڈیوز کے لیے پروفیشنل ایڈیٹنگ اور آڈیو ویڈیو سنک۔',
+    icon: 'Video'
   },
   {
     id: 'srv-6',
     number: '06',
-    title: 'Short Video Content',
-    urduTitle: 'شارٹ فارم ویڈیوز',
-    shortDesc: 'Fast-paced, high-retention vertical short videos optimized for YouTube Shorts, TikTok, and Instagram Reels.',
-    deliverables: [
-      'Vertical 9:16 layout format',
-      'Dynamic captions & sound integration',
-      'First 3-second hook construction'
-    ],
-    icon: 'Smartphone'
+    title: 'Islamic & Educational Content Creation',
+    urduTitle: 'اسلامی و تعلیمی مواد سازی',
+    shortDesc: 'Thoughtful, respectful, and aesthetically inspiring digital Islamic media, reminders, and educational lessons.',
+    urduDesc: 'معیاری اسلامی و دینی پوسٹرز، اخلاقی پیغامات اور تعلیمی معلوماتی ویڈیوز کا تخلیقی کام۔',
+    icon: 'BookOpen'
   },
   {
     id: 'srv-7',
     number: '07',
-    title: 'AI Prompt Creation',
-    urduTitle: 'اے آئی پرامپٹ انجینئرنگ',
-    shortDesc: 'Engineered prompt frameworks and recipes to help creators and teams achieve repeatable, top-tier generative outputs.',
-    deliverables: [
-      'Detailed multi-stage prompt templates',
-      'Style parameters & negative prompt banks',
-      'Model-specific optimization guidance'
-    ],
-    icon: 'Terminal'
+    title: 'Digital Media Production',
+    urduTitle: 'ڈیجیٹل میڈیا پروڈکشن',
+    shortDesc: 'Multi-platform digital media assets, visual branding identity, and cross-channel digital design suites.',
+    urduDesc: 'ناصری پروڈکشن کے تحت سوشل چینلز کے لیے مکمل ڈیجیٹل میڈیا پیکیج۔',
+    icon: 'Tv'
   },
   {
     id: 'srv-8',
     number: '08',
-    title: 'Educational & Islamic Digital Content',
-    urduTitle: 'تعلیمی و اسلامی ڈیجیٹل مواد',
-    shortDesc: 'Authentic and beautifully curated digital presentations, infographics, and reflective media for learning and spiritual growth.',
-    deliverables: [
-      'Culturally resonant visual storytelling',
-      'Nastaliq calligraphy and typographic finesse',
-      'Educational series design & structuring'
-    ],
-    icon: 'BookOpen'
+    title: 'Social Media Content Creation',
+    urduTitle: 'سوشل میڈیا کنٹینٹ کریشن',
+    shortDesc: 'Tailored content strategies and creative assets designed to engage audiences across Facebook, YouTube, TikTok, and Instagram.',
+    urduDesc: 'مختلف سوشل پلیٹ فارمز پر ناظرین سے جڑنے اور فالوونگ بڑھانے کے لیے مستقل مواد۔',
+    icon: 'Share2'
+  },
+  {
+    id: 'srv-9',
+    number: '09',
+    title: 'Damaged Mobile Phone Buying',
+    urduTitle: 'خراب موبائل فونز کی خریداری',
+    shortDesc: 'We purchase damaged, faulty or non-working mobile phones at a reasonable price based on model and condition.',
+    urduDesc: 'ہم ماڈل اور حالت کے مطابق مناسب قیمت پر خراب، فالٹی یا بند موبائل فونز خریدتے ہیں۔',
+    icon: 'Smartphone'
   }
 ];
 
-export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
+/* ==================================================
+   THE EXACT 7 PORTFOLIO CATEGORIES
+   ================================================== */
+export const PORTFOLIO_CATEGORIES: PortfolioCategoryConfig[] = [
   {
-    id: 'proj-1',
-    title: 'Cinematic AI Heritage of Baltistan',
-    urduTitle: 'بلتستان کا تاریخی ورثہ - اے آئی ویڈیو',
-    category: 'AI Videos',
-    description: 'An AI-generated cinematic visual journey exploring historical architectures, mountain landscapes, and cultural heritage of Baltistan.',
-    urduDescription: 'سکردو اور بلتستان کے تاریخی مقامات اور ثقافت پر مبنی جدید اے آئی سنیمیٹک ویڈیو کانسیپٹ۔',
-    thumbnailPlaceholderColor: 'from-amber-950 via-slate-900 to-black',
-    mediaType: 'video',
-    tags: ['AI Video', 'Runway', 'Baltistan', 'Cinematic'],
+    id: 'ai-videos',
+    name: 'AI Videos',
+    urduName: 'اے آئی ویڈیوز',
+    description: 'Generative AI cinematic video sequences, concept shorts, and visual storytelling.',
+    urduDescription: 'جدید اے آئی ٹیکنالوجی سے بنی سنیمیٹک اور تعلیمی ویڈیوز۔',
+    icon: 'Film'
+  },
+  {
+    id: 'youtube-thumbnails',
+    name: 'YouTube Thumbnails',
+    urduName: 'یوٹیوب تھمبنیلز',
+    description: 'High-CTR YouTube thumbnail artworks engineered for contrast and high clickability.',
+    urduDescription: 'یوٹیوب ویڈیوز کے لیے ہائی سی ٹی آر اور پرکشش تھمب نیل ڈیزائنز۔',
+    icon: 'Tv'
+  },
+  {
+    id: 'social-media-posters',
+    name: 'Social Media Posters',
+    urduName: 'سوشل میڈیا پوسٹرز',
+    description: 'Expressive digital posters for social media distribution and campaigns.',
+    urduDescription: 'سوشل میڈیا مہمات، اعلانات اور تھیمز کے لیے معیاری پوسٹرز۔',
+    icon: 'Image'
+  },
+  {
+    id: 'islamic-religious-designs',
+    name: 'Islamic & Religious Designs',
+    urduName: 'اسلامی و دینی ڈیزائنز',
+    description: 'Spiritual, elegant Islamic geometry, Quranic verses, and sacred calligraphy art.',
+    urduDescription: 'باوقار اسلامی خطاطی، قرآنی آیات اور دینی مناسبتوں پر مبنی ڈیزائنز۔',
+    icon: 'BookOpen'
+  },
+  {
+    id: 'ai-images',
+    name: 'AI Images',
+    urduName: 'اے آئی امیجز',
+    description: 'Prompt-engineered ultra-realistic images, character portraits, and scenic artworks.',
+    urduDescription: 'جدید پرامپٹ انجینئرنگ کے ذریعے تیار کردہ خوبصورت اے آئی تصاویر۔',
+    icon: 'Sparkles'
+  },
+  {
+    id: 'video-editing',
+    name: 'Video Editing',
+    urduName: 'ویڈیو ایڈیٹنگ',
+    description: 'Professional cuts, pacing, transitions, and audio-visual post-production.',
+    urduDescription: 'یوٹیوب، ریلز اور شارٹس کے لیے جدید ویڈیو ایڈیٹنگ کا کام۔',
+    icon: 'Video'
+  },
+  {
+    id: 'graphic-design',
+    name: 'Graphic Design',
+    urduName: 'گرافک ڈیزائن',
+    description: 'Creative graphics, banners, flyers, typography, and visual branding.',
+    urduDescription: 'بینرز، فلائرز اور ڈیجیٹل گرافکس کا پروفیشنل کام۔',
+    icon: 'Palette'
+  }
+];
+
+export const portfolioCategories = PORTFOLIO_CATEGORIES;
+
+/* ==================================================
+   CENTRALIZED PORTFOLIO DATA ITEMS
+   Kept empty as requested. When you add real work here,
+   cards automatically appear in the respective category!
+   ================================================== */
+export const portfolioItems: PortfolioProject[] = [
+  // To add a real project, simply add an object like:
+  // {
+  //   id: 'proj-1',
+  //   title: 'My Real AI Project',
+  //   urduTitle: 'میرا پروجیکٹ',
+  //   category: 'AI Videos',
+  //   description: 'Authentic project description.',
+  //   urduDescription: 'پروجیکٹ کی تفصیل',
+  //   mediaType: 'video', // or 'image'
+  //   imageSrc: '/assets/portfolio/project-1.jpg',
+  //   videoSrc: 'https://www.youtube.com/watch?v=...',
+  //   projectUrl: 'https://...',
+  //   tags: ['AI Video', 'Nasiri Production']
+  // }
+];
+
+export const PORTFOLIO_PROJECTS = portfolioItems;
+
+/* ==================================================
+   MEDIA SECTION CLEAN PLACEHOLDERS
+   ================================================== */
+export const MEDIA_PLACEHOLDERS: MediaPlaceholderItem[] = [
+  {
+    id: 'media-videos',
+    title: 'Featured Videos',
+    urduTitle: 'منتخب ویڈیوز',
+    type: 'Videos',
+    description: 'Long-form documentaries, AI video showcases, and educational explainers.',
+    icon: 'Film',
     aspectRatio: '16/9'
   },
   {
-    id: 'proj-2',
-    title: 'Islamic Calligraphy & Geometry Concept',
-    urduTitle: 'اسلامی خطاطی و جیومیٹری پوسٹر',
-    category: 'Posters',
-    description: 'Intricate digital poster series merging traditional Islamic geometric patterns with modern dark minimalist typography.',
-    urduDescription: 'جدید اور کلاسیکی انداز کا حسین امتزاج - باوقار اسلامی ڈیزائن۔',
-    thumbnailPlaceholderColor: 'from-emerald-950 via-slate-900 to-black',
-    mediaType: 'image',
-    tags: ['Poster', 'Urdu Typography', 'Islamic Art', 'Graphic Design'],
-    aspectRatio: '4/5'
-  },
-  {
-    id: 'proj-3',
-    title: 'High CTR AI Technology Explainer',
-    urduTitle: 'اے آئی ٹیکنالوجی تھمب نیل ڈیزائن',
-    category: 'Thumbnails',
-    description: 'Engineered YouTube thumbnail designed with high visual contrast, bold facial expressions, and focal emphasis to maximize CTR.',
-    urduDescription: 'یوٹیوب پر ناظرین کی توجہ حاصل کرنے کے لیے تیار کردہ ہائی سی ٹی آر تھمب نیل۔',
-    thumbnailPlaceholderColor: 'from-red-950 via-slate-900 to-black',
-    mediaType: 'image',
-    tags: ['YouTube Thumbnail', 'CTR Design', 'Photoshop', 'AI Explainer'],
-    aspectRatio: '16/9'
-  },
-  {
-    id: 'proj-4',
-    title: 'Hyper-Realistic Karakoram Explorer',
-    urduTitle: 'قراقرم مہم جو - اے آئی پورٹریٹ آرٹ',
-    category: 'AI Images',
-    description: 'Advanced prompt-engineered character portrait series set against the majestic snow peaks of Skardu and K2.',
-    urduDescription: 'جدید پرامپٹ انجینئرنگ کے ذریعے تیار کردہ حقیقت پسندانہ ڈیجیٹل پورٹریٹ آرٹ۔',
-    thumbnailPlaceholderColor: 'from-sky-950 via-slate-900 to-black',
-    mediaType: 'image',
-    tags: ['AI Image', 'Midjourney', 'FLUX', 'Digital Art'],
-    aspectRatio: '1/1'
-  },
-  {
-    id: 'proj-5',
-    title: 'Digital Ramadan Reflections Reel',
-    urduTitle: 'رمضان المبارک خصوصی شارٹ ویڈیو',
-    category: 'Educational',
-    description: 'Vertical short-form educational video series sharing moral lessons, Quranic reflections, and peaceful atmospheric visuals.',
-    urduDescription: 'تعلیمی اور اخلاقی پیغامات پر مشتمل دلکش شارٹ فارم ویڈیو سیریز۔',
-    thumbnailPlaceholderColor: 'from-amber-900 via-stone-900 to-black',
-    mediaType: 'video',
-    tags: ['Educational', 'Islamic', 'Shorts', 'Urdu Voiceover'],
+    id: 'media-reels',
+    title: 'Short Reels & Clips',
+    urduTitle: 'شارٹ ریلز اور کلپس',
+    type: 'Reels',
+    description: 'High-energy vertical videos for YouTube Shorts, Instagram Reels, and TikTok.',
+    icon: 'Smartphone',
     aspectRatio: '9/16'
   },
   {
-    id: 'proj-6',
-    title: 'Nasiri Production Visual Campaign',
-    urduTitle: 'ناصری پروڈکشن سوشل میڈیا مہم',
-    category: 'Social Media',
-    description: 'Unified social media branding series crafted for multi-platform distribution across Instagram, Facebook, and YouTube.',
-    urduDescription: 'ناصری پروڈکشن کے لیے تیار کردہ کثیر الجہتی سوشل میڈیا تشہیری مواد۔',
-    thumbnailPlaceholderColor: 'from-indigo-950 via-slate-900 to-black',
-    mediaType: 'image',
-    tags: ['Social Media', 'Brand Identity', 'Nasiri Production'],
+    id: 'media-social',
+    title: 'Social Media Content',
+    urduTitle: 'سوشل میڈیا مواد',
+    type: 'Social Media Content',
+    description: 'Visual announcements, poster highlights, and engaging multi-platform posts.',
+    icon: 'Share2',
     aspectRatio: '1/1'
   },
   {
-    id: 'proj-7',
-    title: 'Sci-Fi AI Futuristic World Concept',
-    urduTitle: 'مستقبل کی دنیا - اے آئی ویڈیو تصور',
-    category: 'AI Videos',
-    description: 'Speculative conceptual AI video exploration of futuristic cities, robotics, and cybernetic digital environments.',
-    urduDescription: 'اے آئی جنریٹو ٹیکنالوجی سے بنی جدید سائنسی اور تخیلاتی ویڈیو۔',
-    thumbnailPlaceholderColor: 'from-purple-950 via-slate-900 to-black',
-    mediaType: 'video',
-    tags: ['AI Video', 'Sci-Fi', 'Luma AI', 'VFX'],
+    id: 'media-featured',
+    title: 'Nasiri Production Media',
+    urduTitle: 'ناصری پروڈکشن میڈیا',
+    type: 'Featured Media',
+    description: 'Official releases, studio updates, and creative highlights from Skardu.',
+    icon: 'Tv',
     aspectRatio: '16/9'
+  }
+];
+
+/* ==================================================
+   SOCIAL MEDIA PLATFORMS (NO FAKE URLS)
+   ================================================== */
+export const SOCIAL_LINKS: SocialLinkItem[] = [
+  {
+    name: 'Facebook',
+    urduName: 'فیس بک',
+    url: '', // Ready for Muhammad Mustafa's real link
+    handle: 'Nasiri Production / Muhammad Mustafa Nasiri',
+    icon: 'facebook',
+    color: '#1877F2',
+    description: 'Official Facebook page for updates, community posts, and visual designs.',
+    isConfigured: false
   },
   {
-    id: 'proj-8',
-    title: 'Weekly Islamic Friday Reminder Poster',
-    urduTitle: 'جمعۃ المبارک ڈیجیٹل پوسٹر ڈیزائن',
-    category: 'Posters',
-    description: 'Elegantly typeset Friday greeting poster utilizing gold gradient flourishes and Urdu Nastaliq calligraphy.',
-    urduDescription: 'سنہری نقوش اور نستعلیق خطاطی پر مبنی باوقار جمعہ مبارک پوسٹر۔',
-    thumbnailPlaceholderColor: 'from-yellow-950 via-slate-900 to-black',
-    mediaType: 'image',
-    tags: ['Posters', 'Islamic Content', 'Urdu Typography'],
-    aspectRatio: '4/5'
+    name: 'YouTube',
+    urduName: 'یوٹیوب',
+    url: '', // Ready for Muhammad Mustafa's real link
+    handle: '@NasiriProduction',
+    icon: 'youtube',
+    color: '#FF0000',
+    description: 'AI Videos, video editing workflows, and educational series.',
+    isConfigured: false
   },
   {
-    id: 'proj-9',
-    title: 'Mastering AI Tools Educational Guide',
-    urduTitle: 'اے آئی ٹولز ماسٹری - تعلیمی تھمب نیل',
-    category: 'Thumbnails',
-    description: 'Vibrant clean thumbnail layout for an educational masterclass video on generative AI workflows in Urdu.',
-    urduDescription: 'اردو میں اے آئی ٹیکنالوجی سکھانے والی ویڈیو کے لیے پرکشش تھمب نیل۔',
-    thumbnailPlaceholderColor: 'from-blue-950 via-slate-900 to-black',
-    mediaType: 'image',
-    tags: ['Thumbnails', 'Educational', 'Canva Pro', 'High CTR'],
-    aspectRatio: '16/9'
+    name: 'TikTok',
+    urduName: 'ٹک ٹاک',
+    url: '', // Ready for Muhammad Mustafa's real link
+    handle: '@nasiriproduction',
+    icon: 'tiktok',
+    color: '#00f2fe',
+    description: 'Short-form creative video clips, AI motion experiments, and reels.',
+    isConfigured: false
+  },
+  {
+    name: 'Instagram',
+    urduName: 'انسٹاگرام',
+    url: '', // Ready for Muhammad Mustafa's real link
+    handle: '@nasiriproduction',
+    icon: 'instagram',
+    color: '#E4405F',
+    description: 'High-resolution posters, thumbnails, and visual design highlights.',
+    isConfigured: false
+  },
+  {
+    name: 'WhatsApp',
+    urduName: 'واٹس ایپ',
+    url: 'https://wa.me/923408816926',
+    handle: '03408816926',
+    icon: 'whatsapp',
+    color: '#25D366',
+    description: 'Direct WhatsApp for project inquiries, collaborations, and discussions.',
+    isConfigured: true
   }
 ];
