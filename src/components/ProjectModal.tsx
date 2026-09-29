@@ -1,6 +1,7 @@
 import { X, Play, Image as ImageIcon, ExternalLink, Calendar, Tag } from 'lucide-react';
 import { useEffect } from 'react';
 import { PortfolioProject, PORTFOLIO_CATEGORIES } from '../data/portfolioData';
+import { resolveAssetUrl } from '../utils/assetUrl';
 
 interface ProjectModalProps {
   project: PortfolioProject | null;
@@ -85,7 +86,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             </video>
           ) : project.imageSrc ? (
             <img 
-              src={project.imageSrc} 
+              src={resolveAssetUrl(project.imageSrc)} 
               alt={project.title} 
               referrerPolicy="no-referrer"
               className="max-h-[68vh] w-auto max-w-full object-contain bg-black/90 rounded-lg shadow-2xl" 

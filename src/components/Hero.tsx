@@ -1,96 +1,50 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ArrowDown, 
   Mail, 
   MapPin, 
-  Upload, 
   Sparkles, 
   Briefcase, 
-  Camera,
-  RefreshCw,
-  CheckCircle2
+  Camera
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
-import { getProfileImage, saveProfileImage, clearProfileImage } from '../utils/imageStorage';
+import { getProfileImage } from '../utils/imageStorage';
+import { resolveAssetUrl } from '../utils/assetUrl';
 
 export function Hero() {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string>(() => resolveAssetUrl(PERSONAL_INFO.profileImagePath));
   const [imageError, setImageError] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function loadStoredImage() {
-      // 1. Check persistent IndexedDB storage
-      const saved = await getProfileImage();
-      if (!isMounted) return;
+    async function loadPhoto() {
+      try {
+        const saved = await getProfileImage();
+        if (!isMounted) return;
 
-      if (saved) {
-        setProfileImage(saved);
-        setImageError(false);
-        return;
+        if (saved) {
+          setProfileImage(saved);
+          setImageError(false);
+
+          // Silently sync original photo to server disk so /assets/profile.jpg is preserved for builds
+          fetch('/api/sync-profile-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: saved })
+          }).catch(() => {});
+        }
+      } catch {
+        // Fallback to static asset
       }
-
-      // 2. Try loading /assets/profile.jpg
-      const img = new Image();
-      img.src = PERSONAL_INFO.profileImagePath;
-      img.onload = () => {
-        if (!isMounted) return;
-        setProfileImage(PERSONAL_INFO.profileImagePath);
-        setImageError(false);
-      };
-      img.onerror = () => {
-        if (!isMounted) return;
-        setImageError(true);
-      };
     }
 
-    loadStoredImage();
+    loadPhoto();
 
     return () => {
       isMounted = false;
     };
   }, []);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        setUploadError('Please choose an image under 20MB.');
-        setTimeout(() => setUploadError(null), 4000);
-        return;
-      }
-
-      setUploadError(null);
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        // Instantly display the chosen original photo
-        setProfileImage(base64);
-        setImageError(false);
-        setUploadSuccess(true);
-        setTimeout(() => setUploadSuccess(false), 3500);
-
-        // Persist safely in IndexedDB (no 5MB QuotaExceededError)
-        try {
-          await saveProfileImage(base64);
-        } catch (err) {
-          console.warn('Failed to save to local cache:', err);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleResetPlaceholder = async () => {
-    setProfileImage(null);
-    setImageError(true);
-    await clearProfileImage();
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -258,13 +212,13 @@ export function Hero() {
                     </span>
                   </div>
                   <span className="text-[11px] text-slate-400 font-mono">
-                    {profileImage && !imageError ? 'Original Photo' : 'Image Container'}
+                    Nasiri Production
                   </span>
                 </div>
 
-                {/* Profile Visual Display Area: If image exists, shows photo; otherwise dignified placeholder */}
+                {/* Profile Visual Display Area: Static profile image or brand monogram */}
                 <div className="relative aspect-square w-full rounded-xl overflow-hidden border-2 border-dashed border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-6 text-center group">
-                  {profileImage && !imageError ? (
+                  {!imageError ? (
                     <img 
                       src={profileImage} 
                       alt="Muhammad Mustafa Nasiri" 
@@ -301,9 +255,6 @@ export function Hero() {
                         <p className="text-xs text-slate-400 font-urdu">
                           ناصری پروڈکشن • سکردو، گلگت بلتستان
                         </p>
-                        <p className="text-[11px] text-slate-400 pt-1 font-mono">
-                          Image path: <span className="text-amber-300">/assets/profile.jpg</span>
-                        </p>
                       </div>
                     </div>
                   )}
@@ -313,56 +264,6 @@ export function Hero() {
                   <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-amber-400/60 pointer-events-none" />
                   <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-amber-400/60 pointer-events-none" />
                   <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-amber-400/60 pointer-events-none" />
-                </div>
-
-                {/* Local Photo Selector Action (Allows Mustafa to preview his original photo directly) */}
-                <div className="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="profile-photo-input"
-                  />
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>{profileImage && !imageError ? 'Change Original Photo' : 'Select Original Photo'}</span>
-                    </button>
-
-                    {profileImage && !imageError && (
-                      <button
-                        type="button"
-                        onClick={handleResetPlaceholder}
-                        title="Reset to default placeholder container"
-                        className="px-3 py-2 text-xs font-medium text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-
-                  {uploadSuccess && (
-                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-emerald-400 font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Photo loaded successfully!</span>
-                    </div>
-                  )}
-
-                  {uploadError && (
-                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-rose-400 font-medium">
-                      <span>{uploadError}</span>
-                    </div>
-                  )}
-
-                  <p className="text-[10px] text-slate-400 text-center leading-normal">
-                    You can place your photo as <code className="text-amber-300">/assets/profile.jpg</code> or select your original image file here.
-                  </p>
                 </div>
 
                 {/* Micro branding strip below placeholder */}

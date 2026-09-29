@@ -23,6 +23,7 @@ import {
 } from '../data/portfolioData';
 import { ProjectModal } from './ProjectModal';
 import { getPortfolioImage, savePortfolioImage } from '../utils/imageStorage';
+import { resolveAssetUrl } from '../utils/assetUrl';
 
 function PortfolioPosterCard({ 
   project, 
@@ -31,7 +32,7 @@ function PortfolioPosterCard({
   project: PortfolioProject; 
   onPreview: (proj: PortfolioProject) => void;
 }) {
-  const [currentImage, setCurrentImage] = useState<string>(project.imageSrc || '');
+  const [currentImage, setCurrentImage] = useState<string>(resolveAssetUrl(project.imageSrc) || '');
   const [loadError, setLoadError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
