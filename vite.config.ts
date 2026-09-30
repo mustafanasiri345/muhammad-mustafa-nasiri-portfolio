@@ -57,7 +57,8 @@ function syncProfilePlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
-    base: '/',
+    base: '/'
+      muhammad-mustafa-nasiri-portfolio/',
     plugins: [react(), tailwindcss(), syncProfilePlugin()],
     resolve: {
       alias: {
