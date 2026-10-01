@@ -8,43 +8,39 @@ import {
   Camera
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
-import { getProfileImage } from '../utils/imageStorage';
 import { resolveAssetUrl } from '../utils/assetUrl';
 
 export function Hero() {
-  const [profileImage, setProfileImage] = useState<string>(() => resolveAssetUrl(PERSONAL_INFO.profileImagePath));
+  const primaryImageUrl = resolveAssetUrl(PERSONAL_INFO.profileImagePath) || `${import.meta.env.BASE_URL || '/'}assets/profile.jpg`;
+  
+  const candidateUrls: string[] = [
+    primaryImageUrl,
+    './assets/profile.jpg',
+    'assets/profile.jpg',
+    'https://mustafanasiri345.github.io/muhammad-mustafa-nasiri-portfolio/assets/profile.jpg'
+  ];
+
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadPhoto() {
-      try {
-        const saved = await getProfileImage();
-        if (!isMounted) return;
-
-        if (saved) {
-          setProfileImage(saved);
-          setImageError(false);
-
-          // Silently sync original photo to server disk so /assets/profile.jpg is preserved for builds
-          fetch('/api/sync-profile-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: saved })
-          }).catch(() => {});
-        }
-      } catch {
-        // Fallback to static asset
-      }
+    // Clear any stale legacy localStorage override that could break the photo
+    try {
+      localStorage.removeItem('mustafa_profile_photo');
+    } catch {
+      // Ignore
     }
-
-    loadPhoto();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
+
+  const handleImageError = () => {
+    if (currentUrlIndex + 1 < candidateUrls.length) {
+      setCurrentUrlIndex(prev => prev + 1);
+    } else {
+      setImageError(true);
+    }
+  };
+
+  const currentImageSrc = candidateUrls[currentUrlIndex];
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -220,11 +216,10 @@ export function Hero() {
                 <div className="relative aspect-square w-full rounded-xl overflow-hidden border-2 border-dashed border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-6 text-center group">
                   {!imageError ? (
                     <img 
-                      src={profileImage} 
+                      src={currentImageSrc} 
                       alt="Muhammad Mustafa Nasiri" 
                       className="w-full h-full object-cover rounded-lg"
-                      referrerPolicy="no-referrer"
-                      onError={() => setImageError(true)}
+                      onError={handleImageError}
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center space-y-4">
