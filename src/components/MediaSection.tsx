@@ -212,7 +212,7 @@ export function MediaSection() {
 
                   {/* Action Button */}
                   <div className="pt-3 border-t border-white/5">
-                    {item.isConfigured && item.url ? (
+                    {item.name === 'WhatsApp' ? (
                       <a
                         href={item.url}
                         target="_blank"
@@ -222,12 +222,56 @@ export function MediaSection() {
                         <MessageCircle className="w-3.5 h-3.5" />
                         <span>Chat on WhatsApp</span>
                       </a>
+                    ) : item.name === 'YouTube' ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 transition-colors cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Watch on YouTube</span>
+                      </a>
+                    ) : item.name === 'Facebook' ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 transition-colors cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Visit Facebook</span>
+                      </a>
+                    ) : item.name === 'Instagram' ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/30 transition-colors cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Follow on Instagram</span>
+                      </a>
+                    ) : item.name === 'TikTok' ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 transition-colors cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Follow on TikTok</span>
+                      </a>
                     ) : (
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] text-amber-300/80 font-mono bg-amber-400/10 py-1.5 px-2 rounded border border-amber-400/20 text-center">
-                          Link placeholder ready
-                        </span>
-                      </div>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Open Channel</span>
+                      </a>
                     )}
                   </div>
 

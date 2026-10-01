@@ -9,8 +9,10 @@ import {
   Copy, 
   Check, 
   Sparkles,
-  MapPin
+  MapPin,
+  Loader2
 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { PERSONAL_INFO } from '../data/portfolioData';
 
 interface ContactProps {
@@ -25,6 +27,8 @@ export function Contact({ prefilledService }: ContactProps) {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
@@ -66,10 +70,46 @@ export function Contact({ prefilledService }: ContactProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setFormSubmitted(true);
+    if (isSending) return; // Prevent duplicate submissions
+
+    setIsSending(true);
+    setSendError(null);
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (serviceId && templateId && publicKey) {
+      try {
+        await emailjs.send(
+          serviceId,
+          templateId,
+          {
+            from_name: formData.name.trim(),
+            from_email: formData.email.trim(),
+            message: formData.message.trim(),
+            to_email: PERSONAL_INFO.email
+          },
+          publicKey
+        );
+        setFormSubmitted(true);
+      } catch (err: unknown) {
+        console.error('EmailJS sending error:', err);
+        setSendError('Failed to dispatch automated email via EmailJS gateway. You can forward your message directly via WhatsApp or your email client below.');
+        setFormSubmitted(true);
+      } finally {
+        setIsSending(false);
+      }
+    } else {
+      // Graceful fallback when API keys are pending setup in deployment
+      setTimeout(() => {
+        setIsSending(false);
+        setFormSubmitted(true);
+      }, 400);
+    }
   };
 
   const constructWhatsAppUrl = () => {
@@ -282,12 +322,23 @@ export function Contact({ prefilledService }: ContactProps) {
                 
                 {/* Primary Message requested in prompt */}
                 <h4 className="text-lg font-bold text-white">
-                  Your message form is ready. Email sending can be connected later.
+                  Message Prepared for Muhammad Mustafa Nasiri
                 </h4>
 
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-amber-400/30 text-xs font-mono text-amber-300">
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>mustafanasiri345@gmail.com</span>
+                </div>
+
                 <p dir="rtl" className="text-base font-urdu text-amber-200">
-                  آپ کا میسج فارم تیار ہے۔ ای میل سروس بعد میں کنیکٹ کی جا سکتی ہے۔
+                  آپ کا پیغام تیار ہے۔ فوری ترسیل کے لیے نیچے دیے گئے بٹن سے واٹس ایپ یا براہ راست ای میل کے ذریعے رابطہ کریں۔
                 </p>
+
+                {sendError && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 text-left">
+                    {sendError}
+                  </div>
+                )}
 
                 <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
                   To immediately send your message right now, you can forward it with one click to Muhammad Mustafa via WhatsApp or your default email application:
@@ -412,10 +463,20 @@ export function Contact({ prefilledService }: ContactProps) {
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <button
                     type="submit"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 hover:from-amber-200 hover:to-amber-400 rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                    disabled={isSending}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 hover:from-amber-200 hover:to-amber-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                   >
-                    <Send className="w-4 h-4 text-slate-950" />
-                    <span>Send Message / پیغام بھیجیں</span>
+                    {isSending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 text-slate-950 animate-spin" />
+                        <span>Sending Message...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 text-slate-950" />
+                        <span>Send Message</span>
+                      </>
+                    )}
                   </button>
 
                   <div className="text-[11px] text-slate-400 flex items-center gap-1.5">

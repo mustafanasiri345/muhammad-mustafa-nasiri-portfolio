@@ -29,6 +29,7 @@ export function Navbar({ activeSection }: NavbarProps) {
     { label: 'Services', href: '#services', urdu: 'خدمات' },
     { label: 'Portfolio', href: '#portfolio', urdu: 'پورٹ فولیو' },
     { label: 'Media', href: '#media', urdu: 'سوشل میڈیا' },
+    { label: 'Reviews', href: '#reviews', urdu: 'تاثرات' },
     { label: 'Contact', href: '#contact', urdu: 'رابطہ' },
   ];
 

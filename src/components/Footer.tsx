@@ -16,6 +16,7 @@ export function Footer() {
     { label: 'Services', href: '#services', urdu: 'خدمات' },
     { label: 'Portfolio', href: '#portfolio', urdu: 'پورٹ فولیو' },
     { label: 'Media', href: '#media', urdu: 'میڈیا' },
+    { label: 'Reviews', href: '#reviews', urdu: 'تاثرات' },
     { label: 'Contact', href: '#contact', urdu: 'رابطہ' },
   ];
 
@@ -122,15 +123,18 @@ export function Footer() {
               </a>
             </div>
 
-            {/* Social Media Link Placeholders */}
+            {/* Social Media Links */}
             <div className="flex flex-wrap gap-2">
               {SOCIAL_LINKS.map((link) => (
-                <span
+                <a
                   key={link.name}
-                  className="px-2.5 py-1 rounded bg-slate-900 border border-white/5 text-[11px] text-slate-300"
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-white/5 hover:border-amber-400/40 text-[11px] text-slate-300 hover:text-amber-300 transition-colors"
                 >
                   {link.name}
-                </span>
+                </a>
               ))}
             </div>
 

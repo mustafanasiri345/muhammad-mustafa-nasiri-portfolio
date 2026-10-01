@@ -439,42 +439,42 @@ export const SOCIAL_LINKS: SocialLinkItem[] = [
   {
     name: 'Facebook',
     urduName: 'فیس بک',
-    url: '', // Ready for Muhammad Mustafa's real link
-    handle: 'Nasiri Production / Muhammad Mustafa Nasiri',
+    url: 'https://www.facebook.com/share/1BiPxpe72z/',
+    handle: 'Mustafa Nasiri',
     icon: 'facebook',
     color: '#1877F2',
-    description: 'Official Facebook page for updates, community posts, and visual designs.',
-    isConfigured: false
+    description: 'Official Facebook profile for updates, community posts, and visual designs.',
+    isConfigured: true
   },
   {
     name: 'YouTube',
     urduName: 'یوٹیوب',
-    url: '', // Ready for Muhammad Mustafa's real link
-    handle: '@NasiriProduction',
+    url: 'https://www.youtube.com/@Nasiriproduction96',
+    handle: '@Nasiriproduction96',
     icon: 'youtube',
     color: '#FF0000',
     description: 'AI Videos, video editing workflows, and educational series.',
-    isConfigured: false
+    isConfigured: true
   },
   {
     name: 'TikTok',
     urduName: 'ٹک ٹاک',
-    url: '', // Ready for Muhammad Mustafa's real link
-    handle: '@nasiriproduction',
+    url: 'https://www.tiktok.com/@nasiriproduction96?_r=1&_t=ZS-9ACT0IhJIlJ',
+    handle: '@nasiriproduction96',
     icon: 'tiktok',
     color: '#00f2fe',
     description: 'Short-form creative video clips, AI motion experiments, and reels.',
-    isConfigured: false
+    isConfigured: true
   },
   {
     name: 'Instagram',
     urduName: 'انسٹاگرام',
-    url: '', // Ready for Muhammad Mustafa's real link
-    handle: '@nasiriproduction',
+    url: 'https://www.instagram.com/mustafa.nasiri.9400?stkn=MXg3OWo3cHNueGRsdw==',
+    handle: '@mustafa.nasiri.9400',
     icon: 'instagram',
     color: '#E4405F',
     description: 'High-resolution posters, thumbnails, and visual design highlights.',
-    isConfigured: false
+    isConfigured: true
   },
   {
     name: 'WhatsApp',
