@@ -4,13 +4,28 @@ import path from 'path';
 import fs from 'fs';
 import {defineConfig, Plugin} from 'vite';
 
+const REPO_BASE = '/muhammad-mustafa-nasiri-portfolio/';
+
 function syncProfilePlugin(): Plugin {
   return {
     name: 'sync-profile-image',
     configureServer(server) {
+      // Redirect root access to repository subpath in development
       server.middlewares.use((req, res, next) => {
-        if (req.url === '/assets/profile.jpg') {
-          const file = path.resolve(__dirname, 'public/assets/profile.jpg');
+        if (req.url === '/' || req.url === '') {
+          res.writeHead(302, { Location: REPO_BASE });
+          res.end();
+          return;
+        }
+        next();
+      });
+
+      server.middlewares.use((req, res, next) => {
+        if (
+          req.url === '/assets/profile.jpg' ||
+          req.url === `${REPO_BASE}assets/profile.jpg`
+        ) {
+          const file = path.resolve(process.cwd(), 'public/assets/profile.jpg');
           if (fs.existsSync(file)) {
             res.writeHead(200, { 'Content-Type': 'image/jpeg' });
             return fs.createReadStream(file).pipe(res);
@@ -31,7 +46,7 @@ function syncProfilePlugin(): Plugin {
               if (parsed?.image && typeof parsed.image === 'string') {
                 const base64Data = parsed.image.replace(/^data:image\/\w+;base64,/, '');
                 const buffer = Buffer.from(base64Data, 'base64');
-                const dir = path.resolve(__dirname, 'public/assets');
+                const dir = path.resolve(process.cwd(), 'public/assets');
                 if (!fs.existsSync(dir)) {
                   fs.mkdirSync(dir, { recursive: true });
                 }
@@ -57,11 +72,11 @@ function syncProfilePlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
-  base: '/ muhammad-mustafa-nasiri-portfolio/',
+    base: REPO_BASE,
     plugins: [react(), tailwindcss(), syncProfilePlugin()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(process.cwd(), '.'),
       },
     },
     server: {

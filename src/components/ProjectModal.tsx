@@ -77,7 +77,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           ) : project.mediaType === 'video' && isDirectVideo ? (
             <video
               src={project.videoSrc}
-              poster={project.imageSrc}
+              poster={project.imageSrc ? resolveAssetUrl(project.imageSrc) : undefined}
               controls
               autoPlay
               className="w-full h-full object-contain bg-black"
