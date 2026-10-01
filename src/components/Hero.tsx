@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { 
   ArrowDown, 
   Mail, 
@@ -6,10 +7,13 @@ import {
   Briefcase
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
-import { resolveAssetUrl } from '../utils/assetUrl';
-import profilePhoto from '../assets/profile.jpg';
 
 export function Hero() {
+  const [imageError, setImageError] = useState(false);
+  const base = (import.meta.env.BASE_URL || '/').trim();
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const profilePhoto = `${cleanBase}assets/profile.jpg`;
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -182,18 +186,31 @@ export function Hero() {
 
                 {/* Profile Visual Display Area: Static profile image */}
                 <div className="relative aspect-square w-full rounded-xl overflow-hidden border border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-2 text-center group">
-                  <img 
-                    src={profilePhoto} 
-                    alt="Muhammad Mustafa Nasiri" 
-                    className="w-full h-full object-cover rounded-lg"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (!target.dataset.fallback) {
-                        target.dataset.fallback = '1';
-                        target.src = resolveAssetUrl('assets/profile.jpg');
-                      }
-                    }}
-                  />
+                  {!imageError ? (
+                    <img 
+                      src={profilePhoto} 
+                      alt="Muhammad Mustafa Nasiri" 
+                      loading="eager"
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.dataset.triedRelative) {
+                          target.dataset.triedRelative = '1';
+                          target.src = 'assets/profile.jpg';
+                        } else {
+                          setImageError(true);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-lg bg-gradient-to-br from-amber-400/20 via-amber-500/10 to-transparent border border-amber-400/30 flex flex-col items-center justify-center p-4 text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 font-bold text-xl mb-2 font-mono">
+                        MMN
+                      </div>
+                      <span className="text-sm font-bold text-white">Muhammad Mustafa Nasiri</span>
+                      <span className="text-xs text-amber-300/80 font-mono">Nasiri Production</span>
+                    </div>
+                  )}
 
                   {/* Corner Accent Decor */}
                   <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-amber-400/60 pointer-events-none" />
