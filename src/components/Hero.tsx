@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { 
   ArrowDown, 
   Mail, 
@@ -7,21 +6,10 @@ import {
   Briefcase
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { resolveAssetUrl } from '../utils/assetUrl';
+import profilePhoto from '../assets/profile.jpg';
 
 export function Hero() {
-  const base = (import.meta.env.BASE_URL || '/').trim();
-  const cleanBase = base.endsWith('/') ? base : `${base}/`;
-  const profileImageSrc = `${cleanBase}assets/profile.jpg`;
-
-  useEffect(() => {
-    // Clear any stale legacy localStorage override that could break the photo
-    try {
-      localStorage.removeItem('mustafa_profile_photo');
-    } catch {
-      // Ignore
-    }
-  }, []);
-
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -193,16 +181,16 @@ export function Hero() {
                 </div>
 
                 {/* Profile Visual Display Area: Static profile image */}
-                <div className="relative aspect-square w-full rounded-xl overflow-hidden border-2 border-dashed border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-2 text-center group">
+                <div className="relative aspect-square w-full rounded-xl overflow-hidden border border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-2 text-center group">
                   <img 
-                    src={profileImageSrc} 
+                    src={profilePhoto} 
                     alt="Muhammad Mustafa Nasiri" 
                     className="w-full h-full object-cover rounded-lg"
                     onError={(e) => {
                       const target = e.currentTarget;
                       if (!target.dataset.fallback) {
                         target.dataset.fallback = '1';
-                        target.src = 'assets/profile.jpg';
+                        target.src = resolveAssetUrl('assets/profile.jpg');
                       }
                     }}
                   />

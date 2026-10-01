@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { 
   Sparkles, 
   Film, 
@@ -11,8 +11,7 @@ import {
   Play, 
   ExternalLink,
   Layers,
-  FolderOpen,
-  Upload
+  FolderOpen
 } from 'lucide-react';
 import { 
   PORTFOLIO_CATEGORIES, 
@@ -22,7 +21,6 @@ import {
   PortfolioCategoryConfig 
 } from '../data/portfolioData';
 import { ProjectModal } from './ProjectModal';
-import { getPortfolioImage, savePortfolioImage } from '../utils/imageStorage';
 import { resolveAssetUrl } from '../utils/assetUrl';
 
 function PortfolioPosterCard({ 
@@ -32,38 +30,8 @@ function PortfolioPosterCard({
   project: PortfolioProject; 
   onPreview: (proj: PortfolioProject) => void;
 }) {
-  const [currentImage, setCurrentImage] = useState<string>(resolveAssetUrl(project.imageSrc) || '');
+  const imageSrc = resolveAssetUrl(project.imageSrc) || '';
   const [loadError, setLoadError] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    getPortfolioImage(project.id).then((cached) => {
-      if (isMounted && cached) {
-        setCurrentImage(cached);
-        setLoadError(false);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [project.id]);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        setCurrentImage(base64);
-        setLoadError(false);
-        await savePortfolioImage(project.id, base64);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const filename = project.imageSrc ? project.imageSrc.split('/').pop() : '';
 
   return (
     <div className="glass-panel glass-panel-hover rounded-2xl overflow-hidden border border-amber-400/20 bg-slate-900/80 p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 group">
@@ -71,11 +39,11 @@ function PortfolioPosterCard({
         {/* Poster Image Display Area */}
         <div 
           className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center"
-          onClick={() => onPreview({ ...project, imageSrc: currentImage })}
+          onClick={() => onPreview({ ...project, imageSrc })}
         >
-          {!loadError ? (
+          {!loadError && imageSrc ? (
             <img 
-              src={currentImage} 
+              src={imageSrc} 
               alt={project.title} 
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
@@ -89,20 +57,9 @@ function PortfolioPosterCard({
               <span className="font-urdu text-sm font-bold text-amber-200" dir="rtl">
                 {project.urduTitle || project.title}
               </span>
-              <p className="text-[10px] text-slate-400 font-mono">
-                {filename}
+              <p className="text-[11px] text-amber-300/80 font-urdu" dir="rtl">
+                ناصری پروڈکشن
               </p>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 rounded-lg transition-colors cursor-pointer mt-1"
-              >
-                <Upload className="w-3 h-3" />
-                <span>فائل منتخب کریں</span>
-              </button>
             </div>
           )}
 
@@ -113,14 +70,6 @@ function PortfolioPosterCard({
               <span>پوسٹر بڑا کر کے دیکھیں</span>
             </span>
           </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
         </div>
 
         {/* Category Label Badge */}
@@ -151,7 +100,7 @@ function PortfolioPosterCard({
       <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2 mt-auto">
         <button
           type="button"
-          onClick={() => onPreview({ ...project, imageSrc: currentImage })}
+          onClick={() => onPreview({ ...project, imageSrc })}
           className="flex-1 py-2 px-3 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer"
         >
           <Eye className="w-3.5 h-3.5" />
