@@ -4,26 +4,23 @@ import path from 'path';
 import fs from 'fs';
 import {defineConfig, Plugin} from 'vite';
 
-const REPO_BASE = '/muhammad-mustafa-nasiri-portfolio/';
+const REPO_BASE = process.env.REPO_BASE || '/';
 
 function syncProfilePlugin(): Plugin {
   return {
     name: 'sync-profile-image',
     configureServer(server) {
-      // Redirect root access to repository subpath in development
       server.middlewares.use((req, res, next) => {
-        if (req.url === '/' || req.url === '') {
-          res.writeHead(302, { Location: REPO_BASE });
+        const cleanUrl = (req.url || '').split('?')[0];
+        // If repo base is root, redirect legacy subpath requests to root
+        if (REPO_BASE === '/' && (cleanUrl === '/muhammad-mustafa-nasiri-portfolio' || cleanUrl === '/muhammad-mustafa-nasiri-portfolio/')) {
+          res.writeHead(302, { Location: '/' });
           res.end();
           return;
         }
-        next();
-      });
-
-      server.middlewares.use((req, res, next) => {
-        const cleanUrl = (req.url || '').split('?')[0];
         if (
           cleanUrl === '/assets/profile.jpg' ||
+          cleanUrl === '/muhammad-mustafa-nasiri-portfolio/assets/profile.jpg' ||
           cleanUrl === `${REPO_BASE}assets/profile.jpg`
         ) {
           const file = path.resolve(process.cwd(), 'public/assets/profile.jpg');
