@@ -21,9 +21,10 @@ function syncProfilePlugin(): Plugin {
       });
 
       server.middlewares.use((req, res, next) => {
+        const cleanUrl = (req.url || '').split('?')[0];
         if (
-          req.url === '/assets/profile.jpg' ||
-          req.url === `${REPO_BASE}assets/profile.jpg`
+          cleanUrl === '/assets/profile.jpg' ||
+          cleanUrl === `${REPO_BASE}assets/profile.jpg`
         ) {
           const file = path.resolve(process.cwd(), 'public/assets/profile.jpg');
           if (fs.existsSync(file)) {

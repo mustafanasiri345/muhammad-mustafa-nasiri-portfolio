@@ -1,27 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { 
   ArrowDown, 
   Mail, 
   MapPin, 
   Sparkles, 
-  Briefcase, 
-  Camera
+  Briefcase
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
-import { resolveAssetUrl } from '../utils/assetUrl';
 
 export function Hero() {
-  const primaryImageUrl = resolveAssetUrl(PERSONAL_INFO.profileImagePath) || `${import.meta.env.BASE_URL || '/'}assets/profile.jpg`;
-  
-  const candidateUrls: string[] = [
-    primaryImageUrl,
-    './assets/profile.jpg',
-    'assets/profile.jpg',
-    'https://mustafanasiri345.github.io/muhammad-mustafa-nasiri-portfolio/assets/profile.jpg'
-  ];
-
-  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
-  const [imageError, setImageError] = useState(false);
+  const base = (import.meta.env.BASE_URL || '/').trim();
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const profileImageSrc = `${cleanBase}assets/profile.jpg`;
 
   useEffect(() => {
     // Clear any stale legacy localStorage override that could break the photo
@@ -31,16 +21,6 @@ export function Hero() {
       // Ignore
     }
   }, []);
-
-  const handleImageError = () => {
-    if (currentUrlIndex + 1 < candidateUrls.length) {
-      setCurrentUrlIndex(prev => prev + 1);
-    } else {
-      setImageError(true);
-    }
-  };
-
-  const currentImageSrc = candidateUrls[currentUrlIndex];
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -212,47 +192,20 @@ export function Hero() {
                   </span>
                 </div>
 
-                {/* Profile Visual Display Area: Static profile image or brand monogram */}
-                <div className="relative aspect-square w-full rounded-xl overflow-hidden border-2 border-dashed border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-6 text-center group">
-                  {!imageError ? (
-                    <img 
-                      src={currentImageSrc} 
-                      alt="Muhammad Mustafa Nasiri" 
-                      className="w-full h-full object-cover rounded-lg"
-                      onError={handleImageError}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                      {/* Stylized Monogram Graphic */}
-                      <div className="relative">
-                        <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-amber-400/10 to-slate-800 border border-amber-400/40 flex items-center justify-center shadow-inner">
-                          <div className="flex flex-col items-center">
-                            <span className="text-3xl sm:text-4xl font-extrabold tracking-tighter gold-gradient-text">
-                              MMN
-                            </span>
-                            <span className="text-xs font-urdu text-amber-300 font-medium">
-                              محمد مصطفیٰ ناصری
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Camera icon badge */}
-                        <div className="absolute -bottom-2 -right-2 p-2 rounded-xl bg-amber-400 text-slate-950 shadow-md">
-                          <Camera className="w-4 h-4" />
-                        </div>
-                      </div>
-
-                      {/* Official Dignified Description (NO AI face generated) */}
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-amber-200">
-                          Muhammad Mustafa Nasiri
-                        </p>
-                        <p className="text-xs text-slate-400 font-urdu">
-                          ناصری پروڈکشن • سکردو، گلگت بلتستان
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                {/* Profile Visual Display Area: Static profile image */}
+                <div className="relative aspect-square w-full rounded-xl overflow-hidden border-2 border-dashed border-amber-400/40 bg-gradient-to-br from-slate-900 via-[#0d1322] to-slate-950 flex flex-col items-center justify-center p-2 text-center group">
+                  <img 
+                    src={profileImageSrc} 
+                    alt="Muhammad Mustafa Nasiri" 
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallback) {
+                        target.dataset.fallback = '1';
+                        target.src = 'assets/profile.jpg';
+                      }
+                    }}
+                  />
 
                   {/* Corner Accent Decor */}
                   <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-amber-400/60 pointer-events-none" />
