@@ -12,7 +12,8 @@ import {
   Copy, 
   Check,
   FolderOpen,
-  Sparkles
+  Sparkles,
+  Radio
 } from 'lucide-react';
 import { 
   MEDIA_PLACEHOLDERS, 
@@ -48,6 +49,7 @@ export function MediaSection() {
       case 'facebook': return <Facebook className="w-5 h-5 text-blue-500" />;
       case 'instagram': return <Instagram className="w-5 h-5 text-pink-500" />;
       case 'whatsapp': return <MessageCircle className="w-5 h-5 text-emerald-400" />;
+      case 'whatsapp-channel': return <Radio className="w-5 h-5 text-emerald-400" />;
       case 'tiktok': return (
         <svg className="w-5 h-5 text-[#00f2fe]" viewBox="0 0 24 24" fill="currentColor">
           <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .57.04.84.11V9.41a6.33 6.33 0 0 0-.84-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.71a8.19 8.19 0 0 0 4.77 1.52V6.78a4.85 4.85 0 0 1-1.04-.09z"/>
@@ -173,14 +175,14 @@ export function MediaSection() {
             <span className="font-urdu text-xs text-amber-300/80">سوشل میڈیا روابط</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {SOCIAL_LINKS.map((item: SocialLinkItem) => {
-              const isCopied = copiedLink === item.name;
+              const isWhatsApp = item.name.includes('WhatsApp');
               return (
                 <div
                   key={item.name}
                   className={`glass-panel glass-panel-hover rounded-2xl p-5 flex flex-col justify-between group border relative ${
-                    item.name === 'WhatsApp' ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-white/5'
+                    isWhatsApp ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-white/5'
                   }`}
                 >
                   <div>
@@ -221,6 +223,16 @@ export function MediaSection() {
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
                         <span>Chat on WhatsApp</span>
+                      </a>
+                    ) : item.name === 'WhatsApp Channel' ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 transition-colors cursor-pointer"
+                      >
+                        <Radio className="w-3.5 h-3.5" />
+                        <span>Join WhatsApp Channel</span>
                       </a>
                     ) : item.name === 'YouTube' ? (
                       <a

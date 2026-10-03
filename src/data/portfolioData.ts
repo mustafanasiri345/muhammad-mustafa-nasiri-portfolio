@@ -65,7 +65,7 @@ export interface SocialLinkItem {
   urduName: string;
   url: string;
   handle: string;
-  icon: 'facebook' | 'youtube' | 'tiktok' | 'instagram' | 'whatsapp';
+  icon: 'facebook' | 'youtube' | 'tiktok' | 'instagram' | 'whatsapp' | 'whatsapp-channel';
   color: string;
   description: string;
   isConfigured: boolean;
@@ -484,6 +484,16 @@ export const SOCIAL_LINKS: SocialLinkItem[] = [
     icon: 'whatsapp',
     color: '#25D366',
     description: 'Direct WhatsApp for project inquiries, collaborations, and discussions.',
+    isConfigured: true
+  },
+  {
+    name: 'WhatsApp Channel',
+    urduName: 'واٹس ایپ چینل',
+    url: 'https://whatsapp.com/channel/0029Vb2zu5y7IUYUJ3ttUi0h',
+    handle: 'Nasiri Production Channel',
+    icon: 'whatsapp-channel',
+    color: '#25D366',
+    description: 'Official WhatsApp Channel for announcements, design previews, and project updates.',
     isConfigured: true
   }
 ];

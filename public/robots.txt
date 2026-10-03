@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mustafanasiri345.github.io/muhammad-mustafa-nasiri-portfolio/sitemap.xml

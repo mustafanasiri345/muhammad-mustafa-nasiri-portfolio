@@ -6,6 +6,7 @@ import { Skills } from './components/Skills';
 import { Services } from './components/Services';
 import { Portfolio } from './components/Portfolio';
 import { MediaSection } from './components/MediaSection';
+import { Reviews } from './components/Reviews';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
@@ -15,7 +16,7 @@ export default function App() {
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const sectionIds = ['home', 'about', 'skills', 'services', 'portfolio', 'media', 'contact'];
+    const sectionIds = ['home', 'about', 'skills', 'services', 'portfolio', 'media', 'reviews', 'contact'];
     
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 140;
@@ -66,7 +67,10 @@ export default function App() {
         {/* 6. Media & Social Media Channels */}
         <MediaSection />
 
-        {/* 7. Contact Me */}
+        {/* 7. Reviews & Feedback (Verified Testimonials & Moderation Form) */}
+        <Reviews />
+
+        {/* 8. Contact Me */}
         <Contact prefilledService={selectedServiceForInquiry} />
       </main>
 

@@ -29,6 +29,21 @@ export function Hero() {
 
   return (
     <section id="home" className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
+      {/* Real profile photo as full Hero background with tasteful dark overlay */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+        <img
+          src={profilePhoto}
+          alt=""
+          role="presentation"
+          aria-hidden="true"
+          loading="eager"
+          className="w-full h-full object-cover object-top sm:object-center opacity-25 filter blur-[2px] sm:blur-[3px] scale-105"
+        />
+        {/* Multi-layer dark vignette & gradient overlay to preserve contrast and text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#07090e]/95 via-[#07090e]/85 to-[#07090e]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e] via-[#07090e]/85 to-transparent" />
+      </div>
+
       {/* Ambient background glow and grid */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-tr from-amber-500/10 via-amber-300/5 to-transparent blur-[120px] rounded-full" />
