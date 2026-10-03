@@ -31,7 +31,7 @@ export function Hero() {
     <section id="home" className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
       {/* Soft left-side readability vignette behind text column (face remains clearly visible) */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/55 via-[#07090e]/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/25 via-transparent to-transparent" />
       </div>
 
       {/* Ambient background glow and grid */}

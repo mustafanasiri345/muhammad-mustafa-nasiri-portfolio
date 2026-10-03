@@ -400,7 +400,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'جدید اے آئی ٹیکنالوجی کے ذریعے تیار کردہ حقیقت پسندانہ اور معلوماتی موبائل فون ویڈیو اسٹوری۔',
     urduDescription: 'جدید اے آئی ٹیکنالوجی کے ذریعے تیار کردہ حقیقت پسندانہ اور معلوماتی موبائل فون ویڈیو اسٹوری۔',
     mediaType: 'video',
-    imageSrc: 'assets/ai-video-dead-mobile-phone.jpg',
+    imageSrc: 'assets/ai-video-dead-mobile-phone.jpg.jpg',
     videoSrc: 'assets/ai-video-dead-mobile-phone.mp4',
     tags: ['AI Video', 'Dead Mobile Phone', 'Nasiri Production', 'اے آئی ویڈیو'],
     aspectRatio: '16/9'
@@ -441,7 +441,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'جدید رنگوں اور متوازن ترتیب کے ساتھ تیار کردہ معیاری سوشل میڈیا پوسٹر۔',
     urduDescription: 'جدید رنگوں اور متوازن ترتیب کے ساتھ تیار کردہ معیاری سوشل میڈیا پوسٹر۔',
     mediaType: 'image',
-    imageSrc: 'assets/social-media-poster-02.jpg',
+    imageSrc: 'assets/social-media-poster-02.jpg.jpg',
     tags: ['سوشل میڈیا پوسٹر', 'Digital Art', 'Nasiri Production'],
     aspectRatio: '9/16'
   },
@@ -493,7 +493,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'پروفیشنل برانڈنگ اور ڈیجیٹل لے آؤٹ کے لیے تیار کیا گیا تخلیقی گرافک ڈیزائن۔',
     urduDescription: 'پروفیشنل برانڈنگ اور ڈیجیٹل لے آؤٹ کے لیے تیار کیا گیا تخلیقی گرافک ڈیزائن۔',
     mediaType: 'image',
-    imageSrc: 'assets/graphic-design-01.jpg',
+    imageSrc: 'assets/graphic-design-01.jpg.jpg',
     tags: ['Graphic Design', 'Branding', 'Nasiri Production', 'گرافک ڈیزائن'],
     aspectRatio: '1/1'
   },
@@ -505,7 +505,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'جدید اردو و انگریزی ٹائپوگرافی کے امتزاج سے تیار کردہ برانڈ گرافک ڈیزائن۔',
     urduDescription: 'جدید اردو و انگریزی ٹائپوگرافی کے امتزاج سے تیار کردہ برانڈ گرافک ڈیزائن۔',
     mediaType: 'image',
-    imageSrc: 'assets/graphic-design-02.jpg',
+    imageSrc: 'assets/graphic-design-02.jpg.jpg',
     tags: ['Graphic Design', 'Typography', 'Nasiri Production'],
     aspectRatio: '1/1'
   }
@@ -525,7 +525,7 @@ export const MEDIA_PLACEHOLDERS: MediaPlaceholderItem[] = [
     description: 'Long-form documentaries, AI video showcases, and educational explainers.',
     icon: 'Film',
     aspectRatio: '16/9',
-    imageSrc: 'assets/ai-video-dead-mobile-phone.jpg',
+    imageSrc: 'assets/ai-video-dead-mobile-phone.jpg.jpg',
     videoSrc: 'assets/ai-video-dead-mobile-phone.mp4'
   },
   {
@@ -545,8 +545,8 @@ export const MEDIA_PLACEHOLDERS: MediaPlaceholderItem[] = [
     description: 'Visual announcements, poster highlights, and engaging multi-platform posts.',
     icon: 'Share2',
     aspectRatio: '1/1',
-    imageSrc: 'assets/social-media-content-01.jpg',
-    gallery: ['assets/social-media-content-01.jpg', 'assets/social-media-content-02.jpg']
+    imageSrc: 'assets/social-media-content-01.jpg.jpg',
+    gallery: ['assets/social-media-content-01.jpg.jpg', 'assets/social-media-content-02.jpg.jpg']
   },
   {
     id: 'media-featured',

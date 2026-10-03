@@ -30,7 +30,7 @@ export function About() {
   ];
 
   return (
-    <section id="about" className="relative py-24 bg-[#090d16]/75 backdrop-blur-[2px] border-y border-white/5 overflow-hidden">
+    <section id="about" className="relative py-24 bg-[#090d16]/30 border-y border-white/5 overflow-hidden">
       {/* Background soft ambient accents */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-32 right-10 w-96 h-96 bg-amber-500/5 blur-[120px] rounded-full" />

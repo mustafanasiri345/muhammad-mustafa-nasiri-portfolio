@@ -32,7 +32,7 @@ export function Skills() {
   };
 
   return (
-    <section id="skills" className="relative py-24 bg-[#07090e]/70 backdrop-blur-[2px] overflow-hidden">
+    <section id="skills" className="relative py-24 bg-[#07090e]/28 overflow-hidden">
       {/* Background accents */}
       <div className="absolute top-1/2 left-0 w-72 h-72 bg-amber-500/5 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />

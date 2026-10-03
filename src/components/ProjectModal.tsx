@@ -1,5 +1,5 @@
 import { X, Play, Image as ImageIcon, ExternalLink, Calendar, Tag } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PortfolioProject, PORTFOLIO_CATEGORIES } from '../data/portfolioData';
 import { resolveAssetUrl } from '../utils/assetUrl';
 
@@ -17,6 +17,12 @@ function getYoutubeEmbedUrl(url?: string): string | null {
 }
 
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
+  const [videoError, setVideoError] = useState(false);
+
+  useEffect(() => {
+    setVideoError(false);
+  }, [project]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -64,7 +70,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
         {/* Media Player / Lightbox Area */}
         <div className={`relative w-full rounded-xl overflow-hidden bg-black/95 border border-white/10 mb-5 flex items-center justify-center shrink-0 ${
-          project.mediaType === 'video' ? 'aspect-video' : 'min-h-[280px] max-h-[72vh] p-2'
+          project.mediaType === 'video' && !videoError ? 'aspect-video' : 'min-h-[280px] max-h-[72vh] p-2'
         }`}>
           {project.mediaType === 'video' && youtubeEmbedUrl ? (
             <iframe
@@ -74,7 +80,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
-          ) : project.mediaType === 'video' && isDirectVideo ? (
+          ) : project.mediaType === 'video' && isDirectVideo && !videoError ? (
             <video
               src={resolveAssetUrl(project.videoSrc)}
               poster={project.imageSrc ? resolveAssetUrl(project.imageSrc) : undefined}
@@ -87,6 +93,8 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 if (!target.dataset.triedRelative) {
                   target.dataset.triedRelative = '1';
                   target.src = project.videoSrc || '';
+                } else {
+                  setVideoError(true);
                 }
               }}
             >
@@ -103,6 +111,12 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 if (!target.dataset.triedRelative) {
                   target.dataset.triedRelative = '1';
                   target.src = project.imageSrc || '';
+                } else if (!target.dataset.triedSingleJpg && project.imageSrc?.endsWith('.jpg.jpg')) {
+                  target.dataset.triedSingleJpg = '1';
+                  target.src = resolveAssetUrl(project.imageSrc.replace(/\.jpg\.jpg$/, '.jpg'));
+                } else if (!target.dataset.triedDoubleJpg && project.imageSrc?.endsWith('.jpg') && !project.imageSrc?.endsWith('.jpg.jpg')) {
+                  target.dataset.triedDoubleJpg = '1';
+                  target.src = resolveAssetUrl(`${project.imageSrc}.jpg`);
                 }
               }}
             />

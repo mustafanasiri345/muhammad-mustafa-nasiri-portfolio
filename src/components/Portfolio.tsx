@@ -68,12 +68,18 @@ function PortfolioPosterCard({
               src={imageSrc} 
               alt={project.title} 
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105"
               onError={(e) => {
                 const target = e.currentTarget;
                 if (!target.dataset.triedRelative) {
                   target.dataset.triedRelative = '1';
                   target.src = project.imageSrc || '';
+                } else if (!target.dataset.triedSingleJpg && project.imageSrc?.endsWith('.jpg.jpg')) {
+                  target.dataset.triedSingleJpg = '1';
+                  target.src = resolveAssetUrl(project.imageSrc.replace(/\.jpg\.jpg$/, '.jpg'));
+                } else if (!target.dataset.triedDoubleJpg && project.imageSrc?.endsWith('.jpg') && !project.imageSrc?.endsWith('.jpg.jpg')) {
+                  target.dataset.triedDoubleJpg = '1';
+                  target.src = resolveAssetUrl(`${project.imageSrc}.jpg`);
                 } else if (!target.dataset.triedAltExt) {
                   target.dataset.triedAltExt = '1';
                   const altPath = project.imageSrc?.endsWith('.png')
@@ -212,7 +218,7 @@ export function Portfolio() {
   };
 
   return (
-    <section id="portfolio" className="relative py-24 bg-[#07090e]/70 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
+    <section id="portfolio" className="relative py-24 bg-[#07090e]/30 border-b border-white/5 overflow-hidden">
       {/* Background ambient accents */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 right-10 w-72 h-72 bg-amber-600/5 blur-[120px] rounded-full pointer-events-none" />

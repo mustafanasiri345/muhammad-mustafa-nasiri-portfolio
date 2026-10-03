@@ -38,18 +38,20 @@ function MediaCardItem({
   const [loadError, setLoadError] = useState(false);
   const imageSrc = item.imageSrc ? resolveAssetUrl(item.imageSrc) : '';
   const isVideo = Boolean(item.videoSrc);
+  const hasGallery = Boolean(item.gallery && item.gallery.length > 1);
 
-  const handleOpen = () => {
+  const handleOpenImage = (targetImgPath?: string, indexLabel?: string) => {
+    const chosenImg = targetImgPath || item.imageSrc;
     onPreview({
-      id: item.id,
-      title: item.title,
-      urduTitle: item.urduTitle,
+      id: indexLabel ? `${item.id}-${indexLabel}` : item.id,
+      title: indexLabel ? `${item.title} ${indexLabel}` : item.title,
+      urduTitle: indexLabel ? `${item.urduTitle} ${indexLabel}` : item.urduTitle,
       category: item.type === 'Videos' ? 'AI Videos' : 'Social Media Posters',
       description: item.description,
       urduDescription: item.description,
-      mediaType: item.videoSrc ? 'video' : 'image',
-      imageSrc: item.imageSrc,
-      videoSrc: item.videoSrc,
+      mediaType: item.videoSrc && !targetImgPath ? 'video' : 'image',
+      imageSrc: chosenImg,
+      videoSrc: targetImgPath ? undefined : item.videoSrc,
       aspectRatio: item.aspectRatio === '16/9' ? '16/9' : '1/1'
     });
   };
@@ -92,21 +94,62 @@ function MediaCardItem({
         </p>
 
         {/* Visual Media or Clean Empty-State Canvas Container */}
-        {item.imageSrc && !loadError ? (
+        {hasGallery && item.gallery && !loadError ? (
+          <div className="grid grid-cols-2 gap-2.5 mb-4">
+            {item.gallery.map((galPath, idx) => {
+              const resolvedGal = resolveAssetUrl(galPath);
+              return (
+                <div
+                  key={galPath}
+                  className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 cursor-pointer group/img flex items-center justify-center"
+                  onClick={() => handleOpenImage(galPath, `0${idx + 1}`)}
+                >
+                  <img
+                    src={resolvedGal}
+                    alt={`${item.title} 0${idx + 1}`}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.triedRelative) {
+                        target.dataset.triedRelative = '1';
+                        target.src = galPath;
+                      } else if (!target.dataset.triedSingleJpg && galPath.endsWith('.jpg.jpg')) {
+                        target.dataset.triedSingleJpg = '1';
+                        target.src = resolveAssetUrl(galPath.replace(/\.jpg\.jpg$/, '.jpg'));
+                      } else {
+                        setLoadError(true);
+                      }
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-2">
+                    <span className="inline-flex items-center gap-1 text-[10px] text-amber-300 font-medium bg-slate-900/90 px-2 py-1 rounded border border-amber-400/30">
+                      <Eye className="w-3 h-3" />
+                      <span>0{idx + 1}</span>
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : item.imageSrc && !loadError ? (
           <div 
             className={`relative ${item.aspectRatio === '16/9' ? 'aspect-video' : 'aspect-square'} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
-            onClick={handleOpen}
+            onClick={() => handleOpenImage()}
           >
             <img 
               src={imageSrc} 
               alt={item.title}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105"
               onError={(e) => {
                 const target = e.currentTarget;
                 if (!target.dataset.triedRelative) {
                   target.dataset.triedRelative = '1';
                   target.src = item.imageSrc || '';
+                } else if (!target.dataset.triedSingleJpg && item.imageSrc?.endsWith('.jpg.jpg')) {
+                  target.dataset.triedSingleJpg = '1';
+                  target.src = resolveAssetUrl(item.imageSrc.replace(/\.jpg\.jpg$/, '.jpg'));
                 } else {
                   setLoadError(true);
                 }
@@ -148,7 +191,7 @@ function MediaCardItem({
         <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2 mt-auto">
           <button
             type="button"
-            onClick={handleOpen}
+            onClick={() => handleOpenImage()}
             className="flex-1 py-2 px-3 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer"
           >
             {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
@@ -203,7 +246,7 @@ export function MediaSection() {
   };
 
   return (
-    <section id="media" className="relative py-24 bg-[#090d16]/75 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
+    <section id="media" className="relative py-24 bg-[#090d16]/35 border-b border-white/5 overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/3 w-80 h-80 bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-72 h-72 bg-amber-500/5 blur-[100px] rounded-full pointer-events-none" />
