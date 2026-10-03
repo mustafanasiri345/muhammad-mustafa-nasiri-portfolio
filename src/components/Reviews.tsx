@@ -14,10 +14,13 @@ import {
   Check,
   Trash2,
   ShieldAlert,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   signOut, 
   onAuthStateChanged, 
   User as FirebaseUser 
@@ -80,6 +83,7 @@ export function Reviews() {
   const [approvedReviews, setApprovedReviews] = useState<ReviewItem[]>([]);
   const [pendingReviews, setPendingReviews] = useState<ReviewItem[]>([]);
   const [loadingApproved, setLoadingApproved] = useState(true);
+  const [loadingPending, setLoadingPending] = useState(false);
 
   // Form states
   const [name, setName] = useState('');
@@ -105,23 +109,43 @@ export function Reviews() {
       currentUser.emailVerified
   );
 
+  // Handle redirect result if signInWithRedirect was used as fallback
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setShowAdminPanel(true);
+        }
+      })
+      .catch((err) => {
+        if (err?.message) {
+          setAuthError(err.message);
+        }
+      });
+  }, []);
+
   // Listen to Firebase Auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setAuthReady(true);
-      if (
-        user &&
-        user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
-        user.emailVerified
-      ) {
-        setShowAdminPanel(true);
-      }
     });
     return () => unsubscribe();
   }, []);
 
-  // Open admin login box if URL hash is #admin-reviews
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!showAdminPanel) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowAdminPanel(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showAdminPanel]);
+
+  // Open admin modal if URL hash is #admin-reviews
   useEffect(() => {
     const checkHash = () => {
       if (window.location.hash === '#admin-reviews') {
@@ -163,7 +187,11 @@ export function Reviews() {
       },
       (error) => {
         setLoadingApproved(false);
-        handleFirestoreError(error, OperationType.LIST, 'reviews');
+        try {
+          handleFirestoreError(error, OperationType.LIST, 'reviews');
+        } catch {
+          // Error logged by handleFirestoreError
+        }
       }
     );
 
@@ -174,9 +202,11 @@ export function Reviews() {
   useEffect(() => {
     if (!authReady || !isAuthorizedAdmin) {
       setPendingReviews([]);
+      setLoadingPending(false);
       return;
     }
 
+    setLoadingPending(true);
     const pendingQuery = query(
       collection(db, 'reviews'),
       where('status', '==', 'pending')
@@ -201,9 +231,15 @@ export function Reviews() {
         });
         items.sort((a, b) => b.createdAtMs - a.createdAtMs);
         setPendingReviews(items);
+        setLoadingPending(false);
       },
       (error) => {
-        handleFirestoreError(error, OperationType.LIST, 'reviews');
+        setLoadingPending(false);
+        try {
+          handleFirestoreError(error, OperationType.LIST, 'reviews');
+        } catch {
+          // Error logged by handleFirestoreError
+        }
       }
     );
 
@@ -280,7 +316,11 @@ export function Reviews() {
       setErrors({});
     } catch (error) {
       setSubmitError('Could not submit review right now. Please try again.');
-      handleFirestoreError(error, OperationType.CREATE, `reviews/${reviewId}`);
+      try {
+        handleFirestoreError(error, OperationType.CREATE, `reviews/${reviewId}`);
+      } catch {
+        // Error logged by handleFirestoreError
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -291,10 +331,26 @@ export function Reviews() {
     setAuthLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (err) {
-      setAuthError(
-        err instanceof Error ? err.message : 'Google Sign-In failed. Please try again.'
-      );
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code || '';
+      if (code === 'auth/popup-blocked') {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } catch (redirErr) {
+          setAuthError(
+            redirErr instanceof Error ? redirErr.message : 'Google Sign-In redirect failed.'
+          );
+        }
+      } else if (code === 'auth/unauthorized-domain') {
+        setAuthError(
+          `Domain "${window.location.hostname}" is not yet authorized in Firebase Auth. Add "${window.location.hostname}" in Firebase Console → Authentication → Settings → Authorized domains.`
+        );
+      } else if (code !== 'auth/popup-closed-by-user') {
+        setAuthError(
+          err instanceof Error ? err.message : 'Google Sign-In failed. Please try again.'
+        );
+      }
     } finally {
       setAuthLoading(false);
     }
@@ -319,7 +375,11 @@ export function Reviews() {
         updatedAt: serverTimestamp(),
       });
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `reviews/${reviewId}`);
+      try {
+        handleFirestoreError(error, OperationType.UPDATE, `reviews/${reviewId}`);
+      } catch {
+        // Error logged by handleFirestoreError
+      }
     } finally {
       setActionLoadingId(null);
     }
@@ -331,7 +391,11 @@ export function Reviews() {
     try {
       await deleteDoc(doc(db, 'reviews', reviewId));
     } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `reviews/${reviewId}`);
+      try {
+        handleFirestoreError(error, OperationType.DELETE, `reviews/${reviewId}`);
+      } catch {
+        // Error logged by handleFirestoreError
+      }
     } finally {
       setActionLoadingId(null);
     }
@@ -506,8 +570,8 @@ export function Reviews() {
               </div>
             )}
 
-            {/* Moderation Workflow Explanation Notice */}
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 flex items-start justify-between gap-3 text-xs text-slate-400">
+            {/* Moderation Workflow Explanation Notice + Working Admin Button */}
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 flex items-start justify-between gap-3 text-xs text-slate-400 relative z-20">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
@@ -519,12 +583,22 @@ export function Reviews() {
               </div>
               <button
                 type="button"
-                onClick={() => setShowAdminPanel((prev) => !prev)}
-                className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-amber-400/15 text-slate-400 hover:text-amber-300 border border-white/10 hover:border-amber-400/30 text-[11px] font-mono transition-colors cursor-pointer"
-                title="Admin Moderation Access"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setAuthError(null);
+                  setShowAdminPanel(true);
+                }}
+                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-400/15 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold font-mono transition-all cursor-pointer shadow-sm"
+                title="Open Admin Review Moderation Panel"
               >
-                <Lock className="w-3 h-3" />
+                <Lock className="w-3.5 h-3.5" />
                 <span>Admin</span>
+                {isAuthorizedAdmin && pendingReviews.length > 0 && (
+                  <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-950 text-[10px] font-bold">
+                    {pendingReviews.length}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -559,7 +633,7 @@ export function Reviews() {
                       Thank you, {submittedReview.name}!
                     </h4>
                     <p className="text-xs text-amber-300 font-semibold mt-0.5">
-                      Your review has been submitted for moderation (Status: Pending).
+                      Your review has been submitted for review.
                     </p>
                   </div>
 
@@ -742,39 +816,50 @@ export function Reviews() {
 
         </div>
 
-        {/* ==================================================
-            SECURE ADMIN REVIEW MODERATION PANEL
-            Protected by Firebase Authentication + Firestore Security Rules
-           ================================================== */}
-        {showAdminPanel && (
+      </div>
+
+      {/* ==================================================
+          SECURE ADMIN REVIEW MODERATION MODAL OVERLAY
+          Opens immediately in center of screen when "Admin" is clicked
+         ================================================== */}
+      {showAdminPanel && (
+        <div
+          id="admin-reviews"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-fade-in"
+          onClick={() => setShowAdminPanel(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Admin Review Panel"
+        >
           <div
-            id="admin-reviews"
-            className="mt-16 glass-panel rounded-3xl p-6 sm:p-8 border border-amber-400/30 shadow-2xl animate-fade-in"
+            className="relative w-full max-w-3xl rounded-3xl bg-[#0a0f1d] border border-amber-400/35 p-6 sm:p-8 shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-white/10">
+            {/* Header */}
+            <div className="flex items-start sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                <div className="w-11 h-11 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <span>Admin Review Moderation</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-white flex flex-wrap items-center gap-2">
+                    <span>Admin Review Dashboard</span>
                     <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/30">
                       Firestore Secured
                     </span>
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Restricted exclusively to verified administrator account
+                    Authorized Administrator Moderation Panel
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 shrink-0">
                 {currentUser && (
                   <button
                     type="button"
                     onClick={handleAdminSignOut}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 text-xs font-medium transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 text-xs font-medium transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
@@ -783,35 +868,41 @@ export function Reviews() {
                 <button
                   type="button"
                   onClick={() => setShowAdminPanel(false)}
-                  className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-xs transition-colors cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                  aria-label="Close Admin Panel"
                 >
-                  Close
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             {/* State 1: Not Signed In */}
             {!currentUser ? (
-              <div className="py-8 px-4 text-center max-w-md mx-auto space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center text-amber-300 mx-auto">
-                  <ShieldCheck className="w-7 h-7" />
+              <div className="py-8 px-4 text-center max-w-md mx-auto space-y-5">
+                <div className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center text-amber-300 mx-auto">
+                  <ShieldCheck className="w-8 h-8" />
                 </div>
-                <h4 className="text-base font-bold text-white">
-                  Administrator Sign-In Required
-                </h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Sign in with your authorized Google account to view pending reviews and moderate submissions.
-                </p>
-                {authError && (
-                  <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-                    {authError}
+                <div className="space-y-2">
+                  <h4 className="text-lg font-bold text-white">
+                    Administrator Sign-In
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    Sign in with your authorized Google account (<span className="text-amber-300 font-mono">{ADMIN_EMAIL}</span>) to view and moderate pending reviews.
                   </p>
+                </div>
+
+                {authError && (
+                  <div className="text-xs text-red-300 bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 text-left flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                    <span>{authError}</span>
+                  </div>
                 )}
+
                 <button
                   type="button"
                   onClick={handleAdminSignIn}
                   disabled={authLoading}
-                  className="inline-flex items-center justify-center gap-2.5 py-3 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-60 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-8 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-60 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
                 >
                   {authLoading ? (
                     <>
@@ -827,22 +918,22 @@ export function Reviews() {
                 </button>
               </div>
             ) : !isAuthorizedAdmin ? (
-              /* State 2: Signed In with a Non-Admin Google Account */
+              /* State 2: Signed In with an Unauthorized Google Account */
               <div className="py-8 px-6 rounded-2xl bg-red-500/10 border border-red-500/30 text-center max-w-lg mx-auto space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto">
-                  <ShieldAlert className="w-6 h-6" />
+                <div className="w-14 h-14 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto">
+                  <ShieldAlert className="w-7 h-7" />
                 </div>
-                <h4 className="text-base font-bold text-red-300">
-                  Access denied. This account is not authorized as an administrator.
+                <h4 className="text-base sm:text-lg font-bold text-red-300">
+                  Access denied. This account is not authorized.
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Signed in as <span className="text-slate-200 font-mono">{currentUser.email}</span>. Pending reviews and moderation controls are strictly restricted at the database level.
+                  Signed in as <span className="text-slate-200 font-mono">{currentUser.email}</span>. Only the authorized administrator account may view or moderate pending reviews.
                 </p>
                 <div className="pt-2">
                   <button
                     type="button"
                     onClick={handleAdminSignOut}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 text-xs font-semibold transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 text-xs font-semibold transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out & Switch Account</span>
@@ -893,14 +984,19 @@ export function Reviews() {
 
                 {/* Pending Reviews Queue */}
                 <div>
-                  <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono mb-4 flex items-center gap-2">
+                  <h4 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider font-mono mb-4 flex items-center gap-2">
                     <Clock className="w-4 h-4 text-amber-400" />
-                    <span>Pending Moderation Queue ({pendingReviews.length})</span>
+                    <span>Pending Reviews ({pendingReviews.length})</span>
                   </h4>
 
-                  {pendingReviews.length === 0 ? (
-                    <div className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center text-xs text-slate-400">
-                      No pending reviews waiting for moderation.
+                  {loadingPending ? (
+                    <div className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex items-center justify-center gap-2 text-xs text-slate-400">
+                      <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                      <span>Loading pending reviews...</span>
+                    </div>
+                  ) : pendingReviews.length === 0 ? (
+                    <div className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center text-xs sm:text-sm text-slate-400">
+                      No pending reviews waiting for moderation right now.
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -948,7 +1044,11 @@ export function Reviews() {
                               onClick={() => handleApproveReview(item.id)}
                               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs transition-colors cursor-pointer"
                             >
-                              <Check className="w-4 h-4" />
+                              {actionLoadingId === item.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Check className="w-4 h-4" />
+                              )}
                               <span>Approve</span>
                             </button>
 
@@ -970,9 +1070,8 @@ export function Reviews() {
               </div>
             )}
           </div>
-        )}
-
-      </div>
+        </div>
+      )}
     </section>
   );
 }
