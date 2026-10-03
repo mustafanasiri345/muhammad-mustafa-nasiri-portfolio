@@ -3,12 +3,11 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(({ command }) => {
+export default defineConfig(() => {
   // For GitHub Pages production build (deployed at https://mustafanasiri345.github.io/muhammad-mustafa-nasiri-portfolio/),
-  // the base URL must match the repository name subpath.
-  // In development mode (AI Studio preview), base can remain '/' for root serving.
-  const isBuild = command === 'build';
-  const repoBase = process.env.REPO_BASE || (isBuild ? '/muhammad-mustafa-nasiri-portfolio/' : '/');
+  // the base URL is provided via REPO_BASE in GitHub Actions.
+  // In AI Studio preview and Cloud Run deployments, base remains '/' for root serving.
+  const repoBase = process.env.REPO_BASE || '/';
 
   return {
     base: repoBase,
