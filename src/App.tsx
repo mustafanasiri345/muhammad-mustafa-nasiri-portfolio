@@ -50,7 +50,7 @@ export default function App() {
     <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col font-sans selection:bg-amber-400/20 selection:text-amber-200 relative">
       {/* 
         Continuous real profile photo background extending through the full Home page
-        from top to bottom with balanced, light/semi-transparent dark overlay 
+        from top to bottom with balanced, lighter semi-transparent dark overlay 
       */}
       <div className="fixed inset-0 pointer-events-none select-none overflow-hidden z-0">
         <img
@@ -58,7 +58,7 @@ export default function App() {
           alt=""
           role="presentation"
           aria-hidden="true"
-          className="w-full h-full object-cover object-top lg:object-[center_16%] opacity-65 filter contrast-[1.05]"
+          className="w-full h-full object-cover object-top lg:object-[center_16%] opacity-85 filter contrast-[1.03]"
           onError={(e) => {
             const target = e.currentTarget;
             if (!target.dataset.triedRelative) {
@@ -67,10 +67,10 @@ export default function App() {
             }
           }}
         />
-        {/* Balanced, semi-transparent dark overlay (face and photo clearly visible throughout) */}
-        <div className="absolute inset-0 bg-[#07090e]/50 backdrop-contrast-[1.05]" />
-        {/* Soft radial vignette for balanced peripheral lighting */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07090e]/30 to-[#07090e]/75" />
+        {/* Lighter, balanced semi-transparent dark overlay (face and original photo clearly recognizable throughout) */}
+        <div className="absolute inset-0 bg-[#07090e]/28" />
+        {/* Gentle vertical shading for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07090e]/15 to-[#07090e]/45" />
       </div>
 
       {/* Sticky Navigation */}

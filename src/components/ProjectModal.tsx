@@ -76,11 +76,19 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             />
           ) : project.mediaType === 'video' && isDirectVideo ? (
             <video
-              src={project.videoSrc}
+              src={resolveAssetUrl(project.videoSrc)}
               poster={project.imageSrc ? resolveAssetUrl(project.imageSrc) : undefined}
               controls
               autoPlay
+              playsInline
               className="w-full h-full object-contain bg-black"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.dataset.triedRelative) {
+                  target.dataset.triedRelative = '1';
+                  target.src = project.videoSrc || '';
+                }
+              }}
             >
               Your browser does not support HTML5 video.
             </video>

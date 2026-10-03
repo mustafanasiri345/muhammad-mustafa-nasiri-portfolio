@@ -32,14 +32,35 @@ function PortfolioPosterCard({
 }) {
   const imageSrc = resolveAssetUrl(project.imageSrc) || '';
   const [loadError, setLoadError] = useState(false);
+  const isVideo = project.mediaType === 'video';
   const isThumbnail = project.category === 'YouTube Thumbnails' || project.aspectRatio === '16/9';
+  const isSquare = project.aspectRatio === '1/1';
+  
+  const aspectClass = isThumbnail || isVideo
+    ? 'aspect-video'
+    : isSquare
+    ? 'aspect-square'
+    : 'aspect-[3/4]';
+
+  const getCategoryBadgeIcon = () => {
+    switch (project.category) {
+      case 'AI Videos': return <Film className="w-3 h-3 text-amber-400" />;
+      case 'YouTube Thumbnails': return <Tv className="w-3 h-3 text-amber-400" />;
+      case 'Social Media Posters': return <ImageIcon className="w-3 h-3 text-amber-400" />;
+      case 'Islamic & Religious Designs': return <BookOpen className="w-3 h-3 text-amber-400" />;
+      case 'AI Images': return <Sparkles className="w-3 h-3 text-amber-400" />;
+      case 'Graphic Design': return <Palette className="w-3 h-3 text-amber-400" />;
+      case 'Video Editing': return <Video className="w-3 h-3 text-amber-400" />;
+      default: return <Sparkles className="w-3 h-3 text-amber-400" />;
+    }
+  };
 
   return (
     <div className="glass-panel glass-panel-hover rounded-2xl overflow-hidden border border-amber-400/20 bg-slate-900/80 p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 group">
       <div>
-        {/* Poster / Thumbnail Image Display Area */}
+        {/* Poster / Thumbnail / Image Display Area */}
         <div 
-          className={`relative ${isThumbnail ? 'aspect-video' : 'aspect-[3/4]'} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
+          className={`relative ${aspectClass} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
           onClick={() => onPreview({ ...project, imageSrc })}
         >
           {!loadError && imageSrc ? (
@@ -69,7 +90,7 @@ function PortfolioPosterCard({
           ) : (
             <div className="flex flex-col items-center justify-center p-4 text-center space-y-2.5 w-full h-full bg-gradient-to-b from-slate-900 to-slate-950">
               <div className="w-12 h-12 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300">
-                {isThumbnail ? <Tv className="w-6 h-6 text-amber-400" /> : <BookOpen className="w-6 h-6 text-amber-400" />}
+                {getCategoryBadgeIcon()}
               </div>
               <span className="font-urdu text-sm font-bold text-amber-200" dir="rtl">
                 {project.urduTitle || project.title}
@@ -80,20 +101,34 @@ function PortfolioPosterCard({
             </div>
           )}
 
+          {/* Centered Play Button overlay for Videos */}
+          {isVideo && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-12 h-12 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover/img:scale-115">
+                <Play className="w-5 h-5 fill-slate-950 ml-0.5" />
+              </div>
+            </div>
+          )}
+
           {/* Hover overlay hint */}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
             <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
-              <Eye className="w-3.5 h-3.5" />
-              <span>{isThumbnail ? 'تھمب نیل بڑا کر کے دیکھیں' : 'پوسٹر بڑا کر کے دیکھیں'}</span>
+              {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
+              <span>{isVideo ? 'ویڈیو چلائیں' : isThumbnail ? 'تھمب نیل بڑا کریں' : 'بڑا کر کے دیکھیں'}</span>
             </span>
           </div>
         </div>
 
         {/* Category Label Badge */}
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-400/10 border border-amber-400/25 text-amber-300 text-[11px] font-medium w-fit mb-2.5">
-          {isThumbnail ? <Tv className="w-3 h-3 text-amber-400" /> : <BookOpen className="w-3 h-3 text-amber-400" />}
+          {getCategoryBadgeIcon()}
           <span className="font-urdu">
-            {isThumbnail ? 'یوٹیوب تھمبنیلز' : 'اسلامی و دینی ڈیزائنز'}
+            {project.category === 'AI Videos' ? 'اے آئی ویڈیوز'
+              : project.category === 'YouTube Thumbnails' ? 'یوٹیوب تھمبنیلز'
+              : project.category === 'Social Media Posters' ? 'سوشل میڈیا پوسٹرز'
+              : project.category === 'AI Images' ? 'اے آئی امیجز'
+              : project.category === 'Graphic Design' ? 'گرافک ڈیزائن'
+              : 'اسلامی و دینی ڈیزائنز'}
           </span>
           <span className="text-[10px] text-slate-400">· {project.category}</span>
         </div>
@@ -122,8 +157,27 @@ function PortfolioPosterCard({
           onClick={() => onPreview({ ...project, imageSrc })}
           className="flex-1 py-2 px-3 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer"
         >
-          <Eye className="w-3.5 h-3.5" />
-          <span>{isThumbnail ? 'تھمب نیل دیکھیں / View Thumbnail' : 'پوسٹر دیکھیں / View Poster'}</span>
+          {isVideo ? (
+            <>
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>ویڈیو دیکھیں / Play Video</span>
+            </>
+          ) : isThumbnail ? (
+            <>
+              <Eye className="w-3.5 h-3.5" />
+              <span>تھمب نیل دیکھیں / View Thumbnail</span>
+            </>
+          ) : project.category === 'AI Images' ? (
+            <>
+              <Eye className="w-3.5 h-3.5" />
+              <span>تصویر دیکھیں / View AI Image</span>
+            </>
+          ) : (
+            <>
+              <Eye className="w-3.5 h-3.5" />
+              <span>آرٹ ورک دیکھیں / View Artwork</span>
+            </>
+          )}
         </button>
       </div>
     </div>
@@ -241,9 +295,11 @@ export function Portfolio() {
             const hasProjects = projectsInCat.length > 0;
             const isIslamicCategory = catConfig.name === 'Islamic & Religious Designs';
 
-            // When "All" is active, Islamic & Religious Designs spans full width to comfortably display the 4 cards
-            const spanClass = (activeCategory === 'All' && isIslamicCategory)
+            // When "All" is active, multi-item categories span full width or 2 cols
+            const spanClass = (activeCategory === 'All' && projectsInCat.length >= 3)
               ? 'col-span-1 md:col-span-2 lg:col-span-3'
+              : (activeCategory === 'All' && projectsInCat.length === 2)
+              ? 'col-span-1 md:col-span-2'
               : 'col-span-1';
 
             return (
@@ -285,6 +341,10 @@ export function Portfolio() {
                     <div className={`grid gap-5 my-2 ${
                       projectsInCat.length === 1 
                         ? 'grid-cols-1 max-w-sm sm:max-w-md' 
+                        : projectsInCat.length === 2
+                        ? 'grid-cols-1 sm:grid-cols-2'
+                        : projectsInCat.length === 3
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                         : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
                     }`}>
                       {projectsInCat.map((project) => (

@@ -29,27 +29,9 @@ export function Hero() {
 
   return (
     <section id="home" className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
-      {/* Real profile photo as full Hero background with balanced, lighter semi-transparent overlay */}
+      {/* Soft left-side readability vignette behind text column (face remains clearly visible) */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        <img
-          src={profilePhoto}
-          alt="Muhammad Mustafa Nasiri Hero Background"
-          role="presentation"
-          aria-hidden="true"
-          loading="eager"
-          className="w-full h-full object-cover object-top lg:object-[center_18%] opacity-80"
-          onError={(e) => {
-            const target = e.currentTarget;
-            if (!target.dataset.triedRelative) {
-              target.dataset.triedRelative = '1';
-              target.src = 'assets/profile.jpg';
-            }
-          }}
-        />
-        {/* Light, balanced semi-transparent dark overlay so face & photo are clearly recognizable */}
-        <div className="absolute inset-0 bg-[#07090e]/40 backdrop-contrast-[1.05]" />
-        {/* Soft horizontal vignette on the left behind text column for high contrast readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/75 via-[#07090e]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/55 via-[#07090e]/15 to-transparent" />
       </div>
 
       {/* Ambient background glow and grid */}

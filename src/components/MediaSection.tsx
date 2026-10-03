@@ -13,18 +13,161 @@ import {
   Check,
   FolderOpen,
   Sparkles,
-  Radio
+  Radio,
+  Play,
+  Eye
 } from 'lucide-react';
 import { 
   MEDIA_PLACEHOLDERS, 
   SOCIAL_LINKS, 
   PERSONAL_INFO,
   MediaPlaceholderItem,
-  SocialLinkItem
+  SocialLinkItem,
+  PortfolioProject
 } from '../data/portfolioData';
+import { resolveAssetUrl } from '../utils/assetUrl';
+import { ProjectModal } from './ProjectModal';
+
+function MediaCardItem({
+  item,
+  onPreview
+}: {
+  item: MediaPlaceholderItem;
+  onPreview: (proj: PortfolioProject) => void;
+}) {
+  const [loadError, setLoadError] = useState(false);
+  const imageSrc = item.imageSrc ? resolveAssetUrl(item.imageSrc) : '';
+  const isVideo = Boolean(item.videoSrc);
+
+  const handleOpen = () => {
+    onPreview({
+      id: item.id,
+      title: item.title,
+      urduTitle: item.urduTitle,
+      category: item.type === 'Videos' ? 'AI Videos' : 'Social Media Posters',
+      description: item.description,
+      urduDescription: item.description,
+      mediaType: item.videoSrc ? 'video' : 'image',
+      imageSrc: item.imageSrc,
+      videoSrc: item.videoSrc,
+      aspectRatio: item.aspectRatio === '16/9' ? '16/9' : '1/1'
+    });
+  };
+
+  const getMediaIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'Film': return <Film className="w-5 h-5" />;
+      case 'Smartphone': return <Smartphone className="w-5 h-5" />;
+      case 'Share2': return <Share2 className="w-5 h-5" />;
+      default: return <Tv className="w-5 h-5" />;
+    }
+  };
+
+  return (
+    <div className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between group border border-white/10 relative overflow-hidden transition-all duration-300">
+      <div>
+        {/* Top Type Indicator */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 group-hover:scale-105 transition-transform">
+            {getMediaIcon(item.icon)}
+          </div>
+          <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/5">
+            {item.type}
+          </span>
+        </div>
+
+        {/* Urdu Title */}
+        <div dir="rtl" className="text-xs font-urdu text-amber-300/90 font-medium mb-1 text-right">
+          {item.urduTitle}
+        </div>
+
+        {/* English Title */}
+        <h4 className="text-base font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+          {item.title}
+        </h4>
+
+        {/* Description */}
+        <p className="text-xs text-slate-400 leading-relaxed mb-4">
+          {item.description}
+        </p>
+
+        {/* Visual Media or Clean Empty-State Canvas Container */}
+        {item.imageSrc && !loadError ? (
+          <div 
+            className={`relative ${item.aspectRatio === '16/9' ? 'aspect-video' : 'aspect-square'} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
+            onClick={handleOpen}
+          >
+            <img 
+              src={imageSrc} 
+              alt={item.title}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.dataset.triedRelative) {
+                  target.dataset.triedRelative = '1';
+                  target.src = item.imageSrc || '';
+                } else {
+                  setLoadError(true);
+                }
+              }}
+            />
+
+            {/* Play Button overlay for Videos */}
+            {isVideo && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-11 h-11 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover/img:scale-110">
+                  <Play className="w-5 h-5 fill-slate-950 ml-0.5" />
+                </div>
+              </div>
+            )}
+
+            {/* Hover overlay hint */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
+              <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
+                {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
+                <span>{isVideo ? 'ویڈیو چلائیں / Play Video' : 'دیکھیں / View Content'}</span>
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-xl border-2 border-dashed border-amber-400/25 bg-slate-950/80 p-5 flex flex-col items-center justify-center text-center my-2">
+            <FolderOpen className="w-6 h-6 text-amber-400/80 mb-2" />
+            <p className="text-xs sm:text-sm font-urdu text-amber-200 font-bold mb-1 leading-relaxed text-center">
+              میرا حقیقی میڈیا کام بہت جلد یہاں شامل کیا جائے گا۔
+            </p>
+            <p className="text-[10px] text-slate-400 leading-tight">
+              Real media content will be added here soon.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Action / Footer */}
+      {item.imageSrc && !loadError ? (
+        <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2 mt-auto">
+          <button
+            type="button"
+            onClick={handleOpen}
+            className="flex-1 py-2 px-3 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer"
+          >
+            {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isVideo ? 'ویڈیو دیکھیں / Play Video' : 'دیکھیں / View'}</span>
+          </button>
+        </div>
+      ) : (
+        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-500">
+          <span>Nasiri Production</span>
+          <span className="font-mono text-[10px] text-amber-400/80">{item.aspectRatio}</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function MediaSection() {
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
+  const [selectedMediaProject, setSelectedMediaProject] = useState<PortfolioProject | null>(null);
 
   const handleCopyLink = (name: string, url: string) => {
     if (!url) return;
@@ -102,59 +245,13 @@ export function MediaSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {MEDIA_PLACEHOLDERS.map((item: MediaPlaceholderItem) => {
-              return (
-                <div
-                  key={item.id}
-                  className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between group border border-white/10 relative overflow-hidden"
-                >
-                  <div>
-                    {/* Top Type Indicator */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-300 group-hover:scale-105 transition-transform">
-                        {getMediaIcon(item.icon)}
-                      </div>
-                      <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/5">
-                        {item.type}
-                      </span>
-                    </div>
-
-                    {/* Urdu Title */}
-                    <div dir="rtl" className="text-xs font-urdu text-amber-300/90 font-medium mb-1 text-right">
-                      {item.urduTitle}
-                    </div>
-
-                    {/* English Title */}
-                    <h4 className="text-base font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                      {item.title}
-                    </h4>
-
-                    {/* Description */}
-                    <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                      {item.description}
-                    </p>
-
-                    {/* Clean Empty-State Canvas Container */}
-                    <div className="rounded-xl border-2 border-dashed border-amber-400/25 bg-slate-950/80 p-5 flex flex-col items-center justify-center text-center my-2">
-                      <FolderOpen className="w-6 h-6 text-amber-400/80 mb-2" />
-                      {/* Exact Urdu Message Required by User */}
-                      <p className="text-xs sm:text-sm font-urdu text-amber-200 font-bold mb-1 leading-relaxed text-center">
-                        میرا حقیقی میڈیا کام بہت جلد یہاں شامل کیا جائے گا۔
-                      </p>
-                      <p className="text-[10px] text-slate-400 leading-tight">
-                        Real media content will be added here soon.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Micro Footer */}
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-500">
-                    <span>Nasiri Production</span>
-                    <span className="font-mono text-[10px] text-amber-400/80">{item.aspectRatio}</span>
-                  </div>
-                </div>
-              );
-            })}
+            {MEDIA_PLACEHOLDERS.map((item: MediaPlaceholderItem) => (
+              <MediaCardItem 
+                key={item.id} 
+                item={item} 
+                onPreview={(proj) => setSelectedMediaProject(proj)} 
+              />
+            ))}
           </div>
         </div>
 
@@ -294,6 +391,12 @@ export function MediaSection() {
         </div>
 
       </div>
+
+      {/* Media Detail & Video Lightbox Modal */}
+      <ProjectModal 
+        project={selectedMediaProject} 
+        onClose={() => setSelectedMediaProject(null)} 
+      />
     </section>
   );
 }

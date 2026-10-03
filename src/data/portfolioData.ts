@@ -58,6 +58,9 @@ export interface MediaPlaceholderItem {
   description: string;
   icon: string;
   aspectRatio: string;
+  imageSrc?: string;
+  videoSrc?: string;
+  gallery?: string[];
 }
 
 export interface SocialLinkItem {
@@ -338,6 +341,7 @@ export const portfolioCategories = PORTFOLIO_CATEGORIES;
    Four real original projects inside Islamic & Religious Designs
    ================================================== */
 export const portfolioItems: PortfolioProject[] = [
+  /* 1. Islamic & Religious Designs */
   {
     id: 'islamic-design-1',
     title: 'مجلسِ عزا سے اقتباسات',
@@ -386,6 +390,23 @@ export const portfolioItems: PortfolioProject[] = [
     tags: ['اقتباساتِ مجلس', 'دینی پیغامات', 'Nasiri Production', 'اسلامی ڈیزائن'],
     aspectRatio: '9/16'
   },
+
+  /* 2. AI Videos */
+  {
+    id: 'ai-video-dead-phone',
+    title: 'ڈیڈ موبائل فون — اے آئی ویڈیو اسٹوری',
+    urduTitle: 'ڈیڈ موبائل فون — اے آئی ویڈیو',
+    category: 'AI Videos',
+    description: 'جدید اے آئی ٹیکنالوجی کے ذریعے تیار کردہ حقیقت پسندانہ اور معلوماتی موبائل فون ویڈیو اسٹوری۔',
+    urduDescription: 'جدید اے آئی ٹیکنالوجی کے ذریعے تیار کردہ حقیقت پسندانہ اور معلوماتی موبائل فون ویڈیو اسٹوری۔',
+    mediaType: 'video',
+    imageSrc: 'assets/ai-video-dead-mobile-phone.jpg',
+    videoSrc: 'assets/ai-video-dead-mobile-phone.mp4',
+    tags: ['AI Video', 'Dead Mobile Phone', 'Nasiri Production', 'اے آئی ویڈیو'],
+    aspectRatio: '16/9'
+  },
+
+  /* 3. YouTube Thumbnails */
   {
     id: 'youtube-thumbnail-1',
     title: 'یوٹیوب تھمب نیل ڈیزائن',
@@ -394,16 +415,106 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'ہائی سی ٹی آر یوٹیوب تھمب نیل جو ناظرین کی توجہ حاصل کرنے اور کلکس بڑھانے کے لیے ڈیزائن کیا گیا ہے۔',
     urduDescription: 'ہائی سی ٹی آر یوٹیوب تھمب نیل جو ناظرین کی توجہ حاصل کرنے اور کلکس بڑھانے کے لیے ڈیزائن کیا گیا ہے۔',
     mediaType: 'image',
-    imageSrc: 'assets/thumbnail-01.png',
+    imageSrc: 'assets/thumbnail-01.jpg',
     tags: ['YouTube Thumbnail', 'High CTR', 'Nasiri Production', 'تھمب نیل'],
     aspectRatio: '16/9'
+  },
+
+  /* 4. Social Media Posters */
+  {
+    id: 'social-poster-1',
+    title: 'سوشل میڈیا پوسٹر 01',
+    urduTitle: 'سوشل میڈیا پوسٹر 01',
+    category: 'Social Media Posters',
+    description: 'سوشل میڈیا پروموشنز اور تھیمز کے لیے پرکشش اور معلوماتی ڈیجیٹل پوسٹر ڈیزائن۔',
+    urduDescription: 'سوشل میڈیا پروموشنز اور تھیمز کے لیے پرکشش اور معلوماتی ڈیجیٹل پوسٹر ڈیزائن۔',
+    mediaType: 'image',
+    imageSrc: 'assets/social-media-poster-01.jpg',
+    tags: ['سوشل میڈیا پوسٹر', 'Digital Poster', 'Nasiri Production'],
+    aspectRatio: '9/16'
+  },
+  {
+    id: 'social-poster-2',
+    title: 'سوشل میڈیا پوسٹر 02',
+    urduTitle: 'سوشل میڈیا پوسٹر 02',
+    category: 'Social Media Posters',
+    description: 'جدید رنگوں اور متوازن ترتیب کے ساتھ تیار کردہ معیاری سوشل میڈیا پوسٹر۔',
+    urduDescription: 'جدید رنگوں اور متوازن ترتیب کے ساتھ تیار کردہ معیاری سوشل میڈیا پوسٹر۔',
+    mediaType: 'image',
+    imageSrc: 'assets/social-media-poster-02.jpg',
+    tags: ['سوشل میڈیا پوسٹر', 'Digital Art', 'Nasiri Production'],
+    aspectRatio: '9/16'
+  },
+
+  /* 5. AI Images */
+  {
+    id: 'ai-image-1',
+    title: 'اے آئی تخلیقی تصویر 01',
+    urduTitle: 'اے آئی امیج 01',
+    category: 'AI Images',
+    description: 'جدید پرامپٹ انجینئرنگ کے ذریعے تیار کردہ حقیقت پسندانہ سنیمیٹک اے آئی تصویر۔',
+    urduDescription: 'جدید پرامپٹ انجینئرنگ کے ذریعے تیار کردہ حقیقت پسندانہ سنیمیٹک اے آئی تصویر۔',
+    mediaType: 'image',
+    imageSrc: 'assets/ai-image-01.jpg',
+    tags: ['AI Image', 'Generative Art', 'Nasiri Production', 'اے آئی تصویر'],
+    aspectRatio: '1/1'
+  },
+  {
+    id: 'ai-image-2',
+    title: 'اے آئی تخلیقی تصویر 02',
+    urduTitle: 'اے آئی امیج 02',
+    category: 'AI Images',
+    description: 'عمدہ تفصیلات اور ہائی ریزولوشن ویژول کے ساتھ تیار کردہ اے آئی آرٹ ورک۔',
+    urduDescription: 'عمدہ تفصیلات اور ہائی ریزولوشن ویژول کے ساتھ تیار کردہ اے آئی آرٹ ورک۔',
+    mediaType: 'image',
+    imageSrc: 'assets/ai-image-02.jpg',
+    tags: ['AI Image', 'Digital Artwork', 'Nasiri Production'],
+    aspectRatio: '1/1'
+  },
+  {
+    id: 'ai-image-3',
+    title: 'اے آئی تخلیقی تصویر 03',
+    urduTitle: 'اے آئی امیج 03',
+    category: 'AI Images',
+    description: 'سنیمیٹک لائٹنگ اور جدید کمپوزیشن پر مبنی معیاری اے آئی ڈیزائن۔',
+    urduDescription: 'سنیمیٹک لائٹنگ اور جدید کمپوزیشن پر مبنی معیاری اے آئی ڈیزائن۔',
+    mediaType: 'image',
+    imageSrc: 'assets/ai-image-03.jpg',
+    tags: ['AI Image', 'Prompt Engineering', 'Nasiri Production'],
+    aspectRatio: '1/1'
+  },
+
+  /* 6. Graphic Design */
+  {
+    id: 'graphic-design-1',
+    title: 'گرافک ڈیزائن — آرٹ ورک 01',
+    urduTitle: 'گرافک ڈیزائن 01',
+    category: 'Graphic Design',
+    description: 'پروفیشنل برانڈنگ اور ڈیجیٹل لے آؤٹ کے لیے تیار کیا گیا تخلیقی گرافک ڈیزائن۔',
+    urduDescription: 'پروفیشنل برانڈنگ اور ڈیجیٹل لے آؤٹ کے لیے تیار کیا گیا تخلیقی گرافک ڈیزائن۔',
+    mediaType: 'image',
+    imageSrc: 'assets/graphic-design-01.jpg',
+    tags: ['Graphic Design', 'Branding', 'Nasiri Production', 'گرافک ڈیزائن'],
+    aspectRatio: '1/1'
+  },
+  {
+    id: 'graphic-design-2',
+    title: 'گرافک ڈیزائن — آرٹ ورک 02',
+    urduTitle: 'گرافک ڈیزائن 02',
+    category: 'Graphic Design',
+    description: 'جدید اردو و انگریزی ٹائپوگرافی کے امتزاج سے تیار کردہ برانڈ گرافک ڈیزائن۔',
+    urduDescription: 'جدید اردو و انگریزی ٹائپوگرافی کے امتزاج سے تیار کردہ برانڈ گرافک ڈیزائن۔',
+    mediaType: 'image',
+    imageSrc: 'assets/graphic-design-02.jpg',
+    tags: ['Graphic Design', 'Typography', 'Nasiri Production'],
+    aspectRatio: '1/1'
   }
 ];
 
 export const PORTFOLIO_PROJECTS = portfolioItems;
 
 /* ==================================================
-   MEDIA SECTION CLEAN PLACEHOLDERS
+   MEDIA SECTION DATA WITH UPLOADED ASSETS
    ================================================== */
 export const MEDIA_PLACEHOLDERS: MediaPlaceholderItem[] = [
   {
@@ -413,7 +524,9 @@ export const MEDIA_PLACEHOLDERS: MediaPlaceholderItem[] = [
     type: 'Videos',
     description: 'Long-form documentaries, AI video showcases, and educational explainers.',
     icon: 'Film',
-    aspectRatio: '16/9'
+    aspectRatio: '16/9',
+    imageSrc: 'assets/ai-video-dead-mobile-phone.jpg',
+    videoSrc: 'assets/ai-video-dead-mobile-phone.mp4'
   },
   {
     id: 'media-reels',
@@ -431,7 +544,9 @@ export const MEDIA_PLACEHOLDERS: MediaPlaceholderItem[] = [
     type: 'Social Media Content',
     description: 'Visual announcements, poster highlights, and engaging multi-platform posts.',
     icon: 'Share2',
-    aspectRatio: '1/1'
+    aspectRatio: '1/1',
+    imageSrc: 'assets/social-media-content-01.jpg',
+    gallery: ['assets/social-media-content-01.jpg', 'assets/social-media-content-02.jpg']
   },
   {
     id: 'media-featured',
