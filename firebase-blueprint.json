@@ -1,0 +1,49 @@
+{
+  "entities": {
+    "Review": {
+      "title": "Review",
+      "description": "Client review and feedback item with moderation status",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Name of the reviewer"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Star rating from 1 to 5"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 1500,
+          "description": "Review feedback message"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"],
+          "description": "Moderation status of the review"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when review was submitted"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when review status was updated"
+        }
+      },
+      "required": ["name", "rating", "message", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Publicly submitted client reviews moderated by the authorized administrator"
+    }
+  }
+}

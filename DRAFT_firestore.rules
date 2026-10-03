@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net: Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Global Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email == "mustafanasiri345@gmail.com" &&
+        request.auth.token.email_verified == true;
+    }
+
+    // 3. Entity Validation Blueprint for Review
+    function isValidReview(data) {
+      return data.keys().hasAll(['name', 'rating', 'message', 'status', 'createdAt']) &&
+        data.keys().hasOnly(['name', 'rating', 'message', 'status', 'createdAt', 'updatedAt']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+        data.rating is int && data.rating >= 1 && data.rating <= 5 &&
+        data.message is string && data.message.size() >= 8 && data.message.size() <= 1500 &&
+        data.status is string && data.status.size() <= 20 && data.status in ['pending', 'approved', 'rejected'] &&
+        data.createdAt is timestamp &&
+        (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    // 4. Reviews Collection Rules
+    match /reviews/{reviewId} {
+      // Public visitors may ONLY read approved reviews; verified admin may read all reviews
+      allow get: if isValidId(reviewId) && (existing().status == 'approved' || isAdmin());
+      allow list: if existing().status == 'approved' || isAdmin();
+
+      // Anyone may submit a new review ONLY with status == 'pending' and server timestamp
+      allow create: if isValidId(reviewId) &&
+        isValidReview(incoming()) &&
+        incoming().keys().hasOnly(['name', 'rating', 'message', 'status', 'createdAt']) &&
+        incoming().status == 'pending' &&
+        incoming().createdAt == request.time;
+
+      // Only the verified admin may update review status; original fields remain immutable
+      allow update: if isValidReview(incoming()) &&
+        isValidId(reviewId) &&
+        isAdmin() &&
+        incoming().name == existing().name &&
+        incoming().rating == existing().rating &&
+        incoming().message == existing().message &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) &&
+        incoming().status in ['approved', 'rejected', 'pending'] &&
+        (!('updatedAt' in incoming()) || incoming().updatedAt == request.time);
+
+      // Only the verified admin may delete a review
+      allow delete: if isValidId(reviewId) && isAdmin();
+    }
+  }
+}
