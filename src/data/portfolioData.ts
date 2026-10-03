@@ -385,6 +385,18 @@ export const portfolioItems: PortfolioProject[] = [
     imageSrc: 'assets/majlis-04.jpg',
     tags: ['اقتباساتِ مجلس', 'دینی پیغامات', 'Nasiri Production', 'اسلامی ڈیزائن'],
     aspectRatio: '9/16'
+  },
+  {
+    id: 'youtube-thumbnail-1',
+    title: 'یوٹیوب تھمب نیل ڈیزائن',
+    urduTitle: 'یوٹیوب تھمب نیل ڈیزائن',
+    category: 'YouTube Thumbnails',
+    description: 'ہائی سی ٹی آر یوٹیوب تھمب نیل جو ناظرین کی توجہ حاصل کرنے اور کلکس بڑھانے کے لیے ڈیزائن کیا گیا ہے۔',
+    urduDescription: 'ہائی سی ٹی آر یوٹیوب تھمب نیل جو ناظرین کی توجہ حاصل کرنے اور کلکس بڑھانے کے لیے ڈیزائن کیا گیا ہے۔',
+    mediaType: 'image',
+    imageSrc: 'assets/thumbnail-01.png',
+    tags: ['YouTube Thumbnail', 'High CTR', 'Nasiri Production', 'تھمب نیل'],
+    aspectRatio: '16/9'
   }
 ];
 

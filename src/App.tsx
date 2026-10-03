@@ -15,6 +15,10 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string | undefined>(undefined);
 
+  const base = (import.meta.env.BASE_URL || '/').trim();
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const profilePhoto = `${cleanBase}assets/profile.jpg`;
+
   useEffect(() => {
     const sectionIds = ['home', 'about', 'skills', 'services', 'portfolio', 'media', 'reviews', 'contact'];
     
@@ -43,12 +47,37 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col font-sans selection:bg-amber-400/20 selection:text-amber-200">
+    <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col font-sans selection:bg-amber-400/20 selection:text-amber-200 relative">
+      {/* 
+        Continuous real profile photo background extending through the full Home page
+        from top to bottom with balanced, light/semi-transparent dark overlay 
+      */}
+      <div className="fixed inset-0 pointer-events-none select-none overflow-hidden z-0">
+        <img
+          src={profilePhoto}
+          alt=""
+          role="presentation"
+          aria-hidden="true"
+          className="w-full h-full object-cover object-top lg:object-[center_16%] opacity-65 filter contrast-[1.05]"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.dataset.triedRelative) {
+              target.dataset.triedRelative = '1';
+              target.src = 'assets/profile.jpg';
+            }
+          }}
+        />
+        {/* Balanced, semi-transparent dark overlay (face and photo clearly visible throughout) */}
+        <div className="absolute inset-0 bg-[#07090e]/50 backdrop-contrast-[1.05]" />
+        {/* Soft radial vignette for balanced peripheral lighting */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07090e]/30 to-[#07090e]/75" />
+      </div>
+
       {/* Sticky Navigation */}
       <Navbar activeSection={activeSection} />
 
       {/* Main Content Sections matching the 7 nav links */}
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {/* 1. Hero / Home */}
         <Hero />
 

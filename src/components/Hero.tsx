@@ -50,8 +50,6 @@ export function Hero() {
         <div className="absolute inset-0 bg-[#07090e]/40 backdrop-contrast-[1.05]" />
         {/* Soft horizontal vignette on the left behind text column for high contrast readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/75 via-[#07090e]/30 to-transparent" />
-        {/* Soft bottom edge blend into next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#07090e] to-transparent" />
       </div>
 
       {/* Ambient background glow and grid */}

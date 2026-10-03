@@ -124,7 +124,7 @@ export function Contact({ prefilledService }: ContactProps) {
   };
 
   return (
-    <section id="contact" className="relative py-24 bg-[#07090e] border-b border-white/5 overflow-hidden">
+    <section id="contact" className="relative py-24 bg-[#07090e]/75 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
       {/* Background ambient accents */}
       <div className="absolute top-1/3 left-10 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-emerald-500/5 blur-[140px] rounded-full pointer-events-none" />

@@ -21,7 +21,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative bg-[#05070b] border-t border-white/10 pt-16 pb-12 overflow-hidden text-slate-400">
+    <footer className="relative bg-[#05070b]/85 backdrop-blur-[2px] border-t border-white/10 pt-16 pb-12 overflow-hidden text-slate-400">
       
       {/* Decorative top gold gradient hairline */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent" />

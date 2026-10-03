@@ -50,7 +50,7 @@ export function Services({ onSelectService }: ServicesProps) {
   };
 
   return (
-    <section id="services" className="relative py-24 bg-[#090d16] border-b border-white/5 overflow-hidden">
+    <section id="services" className="relative py-24 bg-[#090d16]/75 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
       {/* Subtle ambient light */}
       <div className="absolute top-1/3 right-0 w-80 h-80 bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
 

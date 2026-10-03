@@ -60,7 +60,7 @@ export function MediaSection() {
   };
 
   return (
-    <section id="media" className="relative py-24 bg-[#090d16] border-b border-white/5 overflow-hidden">
+    <section id="media" className="relative py-24 bg-[#090d16]/75 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/3 w-80 h-80 bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-72 h-72 bg-amber-500/5 blur-[100px] rounded-full pointer-events-none" />

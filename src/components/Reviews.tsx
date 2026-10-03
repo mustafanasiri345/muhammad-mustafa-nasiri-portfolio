@@ -95,7 +95,7 @@ export function Reviews() {
   };
 
   return (
-    <section id="reviews" className="relative py-24 bg-[#07090e] border-b border-white/5 overflow-hidden">
+    <section id="reviews" className="relative py-24 bg-[#07090e]/70 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
       {/* Background ambient accents */}
       <div className="absolute top-1/3 right-10 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-500/5 blur-[140px] rounded-full pointer-events-none" />

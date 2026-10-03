@@ -32,13 +32,14 @@ function PortfolioPosterCard({
 }) {
   const imageSrc = resolveAssetUrl(project.imageSrc) || '';
   const [loadError, setLoadError] = useState(false);
+  const isThumbnail = project.category === 'YouTube Thumbnails' || project.aspectRatio === '16/9';
 
   return (
     <div className="glass-panel glass-panel-hover rounded-2xl overflow-hidden border border-amber-400/20 bg-slate-900/80 p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 group">
       <div>
-        {/* Poster Image Display Area */}
+        {/* Poster / Thumbnail Image Display Area */}
         <div 
-          className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center"
+          className={`relative ${isThumbnail ? 'aspect-video' : 'aspect-[3/4]'} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
           onClick={() => onPreview({ ...project, imageSrc })}
         >
           {!loadError && imageSrc ? (
@@ -52,9 +53,14 @@ function PortfolioPosterCard({
                 if (!target.dataset.triedRelative) {
                   target.dataset.triedRelative = '1';
                   target.src = project.imageSrc || '';
-                } else if (!target.dataset.triedPng && project.imageSrc?.endsWith('.jpg')) {
-                  target.dataset.triedPng = '1';
-                  target.src = resolveAssetUrl(project.imageSrc.replace(/\.jpg$/, '.png'));
+                } else if (!target.dataset.triedAltExt) {
+                  target.dataset.triedAltExt = '1';
+                  const altPath = project.imageSrc?.endsWith('.png')
+                    ? project.imageSrc.replace(/\.png$/, '.jpg')
+                    : project.imageSrc?.replace(/\.jpg$/, '.png');
+                  if (altPath) {
+                    target.src = resolveAssetUrl(altPath);
+                  }
                 } else {
                   setLoadError(true);
                 }
@@ -63,7 +69,7 @@ function PortfolioPosterCard({
           ) : (
             <div className="flex flex-col items-center justify-center p-4 text-center space-y-2.5 w-full h-full bg-gradient-to-b from-slate-900 to-slate-950">
               <div className="w-12 h-12 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300">
-                <BookOpen className="w-6 h-6 text-amber-400" />
+                {isThumbnail ? <Tv className="w-6 h-6 text-amber-400" /> : <BookOpen className="w-6 h-6 text-amber-400" />}
               </div>
               <span className="font-urdu text-sm font-bold text-amber-200" dir="rtl">
                 {project.urduTitle || project.title}
@@ -78,16 +84,18 @@ function PortfolioPosterCard({
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
             <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
               <Eye className="w-3.5 h-3.5" />
-              <span>پوسٹر بڑا کر کے دیکھیں</span>
+              <span>{isThumbnail ? 'تھمب نیل بڑا کر کے دیکھیں' : 'پوسٹر بڑا کر کے دیکھیں'}</span>
             </span>
           </div>
         </div>
 
         {/* Category Label Badge */}
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-400/10 border border-amber-400/25 text-amber-300 text-[11px] font-medium w-fit mb-2.5">
-          <BookOpen className="w-3 h-3 text-amber-400" />
-          <span className="font-urdu">اسلامی و دینی ڈیزائنز</span>
-          <span className="text-[10px] text-slate-400">· Islamic Designs</span>
+          {isThumbnail ? <Tv className="w-3 h-3 text-amber-400" /> : <BookOpen className="w-3 h-3 text-amber-400" />}
+          <span className="font-urdu">
+            {isThumbnail ? 'یوٹیوب تھمبنیلز' : 'اسلامی و دینی ڈیزائنز'}
+          </span>
+          <span className="text-[10px] text-slate-400">· {project.category}</span>
         </div>
 
         {/* Project Title */}
@@ -115,7 +123,7 @@ function PortfolioPosterCard({
           className="flex-1 py-2 px-3 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer"
         >
           <Eye className="w-3.5 h-3.5" />
-          <span>پوسٹر دیکھیں / View Poster</span>
+          <span>{isThumbnail ? 'تھمب نیل دیکھیں / View Thumbnail' : 'پوسٹر دیکھیں / View Poster'}</span>
         </button>
       </div>
     </div>
@@ -150,7 +158,7 @@ export function Portfolio() {
   };
 
   return (
-    <section id="portfolio" className="relative py-24 bg-[#07090e] border-b border-white/5 overflow-hidden">
+    <section id="portfolio" className="relative py-24 bg-[#07090e]/70 backdrop-blur-[2px] border-b border-white/5 overflow-hidden">
       {/* Background ambient accents */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/5 blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 right-10 w-72 h-72 bg-amber-600/5 blur-[120px] rounded-full pointer-events-none" />
@@ -274,7 +282,11 @@ export function Portfolio() {
 
                   {/* Content Area: If projects exist, render the project cards. NO empty state here! */}
                   {hasProjects ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 my-2">
+                    <div className={`grid gap-5 my-2 ${
+                      projectsInCat.length === 1 
+                        ? 'grid-cols-1 max-w-sm sm:max-w-md' 
+                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+                    }`}>
                       {projectsInCat.map((project) => (
                         <PortfolioPosterCard
                           key={project.id}
