@@ -90,6 +90,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               alt={project.title} 
               referrerPolicy="no-referrer"
               className="max-h-[68vh] w-auto max-w-full object-contain bg-black/90 rounded-lg shadow-2xl" 
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.dataset.triedRelative) {
+                  target.dataset.triedRelative = '1';
+                  target.src = project.imageSrc || '';
+                }
+              }}
             />
           ) : project.videoSrc ? (
             <div className="flex flex-col items-center justify-center p-6 text-center space-y-3">

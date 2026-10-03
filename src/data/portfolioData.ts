@@ -346,7 +346,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'مجلسِ عزا کے اہم دینی نکات اور منتخب اقتباسات کو معلوماتی اور خوبصورت انداز میں پیش کرنے کے لیے تیار کردہ ڈیزائن۔',
     urduDescription: 'مجلسِ عزا کے اہم دینی نکات اور منتخب اقتباسات کو معلوماتی اور خوبصورت انداز میں پیش کرنے کے لیے تیار کردہ ڈیزائن۔',
     mediaType: 'image',
-    imageSrc: 'assets/portfolio/1790530201357.jpg',
+    imageSrc: 'assets/majlis-01.jpg',
     tags: ['مجلسِ عزا', 'دینی پوسٹر', 'Nasiri Production', 'اسلامی ڈیزائن'],
     aspectRatio: '9/16'
   },
@@ -358,7 +358,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'شہادتِ امام رضا علیہ السلام کی مناسبت سے تیار کردہ معلوماتی اور دینی مجلس پوسٹر۔',
     urduDescription: 'شہادتِ امام رضا علیہ السلام کی مناسبت سے تیار کردہ معلوماتی اور دینی مجلس پوسٹر۔',
     mediaType: 'image',
-    imageSrc: 'assets/portfolio/1790530201362.jpg',
+    imageSrc: 'assets/majlis-02.jpg',
     tags: ['امام رضا علیہ السلام', 'مجلسِ عزا', 'Nasiri Production', 'دینی پوسٹر'],
     aspectRatio: '9/16'
   },
@@ -370,7 +370,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'مجلس کے اہم موضوعات، دینی نکات اور پیغام کو مختصر انداز میں پیش کرنے کے لیے تیار کیا گیا خلاصہ پوسٹر۔',
     urduDescription: 'مجلس کے اہم موضوعات، دینی نکات اور پیغام کو مختصر انداز میں پیش کرنے کے لیے تیار کیا گیا خلاصہ پوسٹر۔',
     mediaType: 'image',
-    imageSrc: 'assets/portfolio/1790530201368.jpg',
+    imageSrc: 'assets/majlis-03.jpg',
     tags: ['خلاصۂ مجلس', 'دینی نکات', 'Nasiri Production', 'اسلامی ڈیزائن'],
     aspectRatio: '9/16'
   },
@@ -382,7 +382,7 @@ export const portfolioItems: PortfolioProject[] = [
     description: 'مجلسِ عزا کے اہم پیغامات اور منتخب دینی نکات پر مشتمل معلوماتی ڈیزائن۔',
     urduDescription: 'مجلسِ عزا کے اہم پیغامات اور منتخب دینی نکات پر مشتمل معلوماتی ڈیزائن۔',
     mediaType: 'image',
-    imageSrc: 'assets/portfolio/1790530201374.jpg',
+    imageSrc: 'assets/majlis-04.jpg',
     tags: ['اقتباساتِ مجلس', 'دینی پیغامات', 'Nasiri Production', 'اسلامی ڈیزائن'],
     aspectRatio: '9/16'
   }

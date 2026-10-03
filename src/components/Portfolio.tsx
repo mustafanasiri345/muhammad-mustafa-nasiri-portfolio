@@ -47,7 +47,18 @@ function PortfolioPosterCard({
               alt={project.title} 
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
-              onError={() => setLoadError(true)}
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.dataset.triedRelative) {
+                  target.dataset.triedRelative = '1';
+                  target.src = project.imageSrc || '';
+                } else if (!target.dataset.triedPng && project.imageSrc?.endsWith('.jpg')) {
+                  target.dataset.triedPng = '1';
+                  target.src = resolveAssetUrl(project.imageSrc.replace(/\.jpg$/, '.png'));
+                } else {
+                  setLoadError(true);
+                }
+              }}
             />
           ) : (
             <div className="flex flex-col items-center justify-center p-4 text-center space-y-2.5 w-full h-full bg-gradient-to-b from-slate-900 to-slate-950">

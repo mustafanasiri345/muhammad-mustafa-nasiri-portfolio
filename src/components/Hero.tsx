@@ -29,19 +29,29 @@ export function Hero() {
 
   return (
     <section id="home" className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
-      {/* Real profile photo as full Hero background with tasteful dark overlay */}
+      {/* Real profile photo as full Hero background with balanced, lighter semi-transparent overlay */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
         <img
           src={profilePhoto}
-          alt=""
+          alt="Muhammad Mustafa Nasiri Hero Background"
           role="presentation"
           aria-hidden="true"
           loading="eager"
-          className="w-full h-full object-cover object-top sm:object-center opacity-25 filter blur-[2px] sm:blur-[3px] scale-105"
+          className="w-full h-full object-cover object-top lg:object-[center_18%] opacity-80"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.dataset.triedRelative) {
+              target.dataset.triedRelative = '1';
+              target.src = 'assets/profile.jpg';
+            }
+          }}
         />
-        {/* Multi-layer dark vignette & gradient overlay to preserve contrast and text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#07090e]/95 via-[#07090e]/85 to-[#07090e]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e] via-[#07090e]/85 to-transparent" />
+        {/* Light, balanced semi-transparent dark overlay so face & photo are clearly recognizable */}
+        <div className="absolute inset-0 bg-[#07090e]/40 backdrop-contrast-[1.05]" />
+        {/* Soft horizontal vignette on the left behind text column for high contrast readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07090e]/75 via-[#07090e]/30 to-transparent" />
+        {/* Soft bottom edge blend into next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#07090e] to-transparent" />
       </div>
 
       {/* Ambient background glow and grid */}
