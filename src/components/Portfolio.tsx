@@ -31,7 +31,9 @@ function PortfolioPosterCard({
   onPreview: (proj: PortfolioProject) => void;
 }) {
   const imageSrc = resolveAssetUrl(project.imageSrc) || '';
+  const videoSrc = resolveAssetUrl(project.videoSrc) || '';
   const [loadError, setLoadError] = useState(false);
+  const [isPlayingInline, setIsPlayingInline] = useState(false);
   const isVideo = project.mediaType === 'video';
   const isThumbnail = project.category === 'YouTube Thumbnails' || project.aspectRatio === '16/9';
   const isSquare = project.aspectRatio === '1/1';
@@ -55,15 +57,37 @@ function PortfolioPosterCard({
     }
   };
 
+  const handleCardMediaClick = () => {
+    if (isVideo && videoSrc) {
+      setIsPlayingInline(true);
+    } else {
+      onPreview(project);
+    }
+  };
+
   return (
     <div className="glass-panel glass-panel-hover rounded-2xl overflow-hidden border border-amber-400/20 bg-slate-900/80 p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 group">
       <div>
-        {/* Poster / Thumbnail / Image Display Area */}
+        {/* Poster / Thumbnail / Video Display Area */}
         <div 
           className={`relative ${aspectClass} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
-          onClick={() => onPreview({ ...project, imageSrc })}
+          onClick={!isPlayingInline ? handleCardMediaClick : undefined}
         >
-          {!loadError && imageSrc ? (
+          {isVideo && isPlayingInline && videoSrc ? (
+            <video
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              poster={imageSrc || undefined}
+              className="w-full h-full object-contain bg-black"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <source src={videoSrc} type="video/mp4" />
+              {project.videoSrc && <source src={project.videoSrc} type="video/mp4" />}
+              Your browser does not support HTML5 video.
+            </video>
+          ) : !loadError && imageSrc ? (
             <img 
               src={imageSrc} 
               alt={project.title} 
@@ -107,8 +131,8 @@ function PortfolioPosterCard({
             </div>
           )}
 
-          {/* Centered Play Button overlay for Videos */}
-          {isVideo && (
+          {/* Centered Play Button overlay for Videos (when not playing inline) */}
+          {isVideo && !isPlayingInline && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-12 h-12 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover/img:scale-115">
                 <Play className="w-5 h-5 fill-slate-950 ml-0.5" />
@@ -117,12 +141,14 @@ function PortfolioPosterCard({
           )}
 
           {/* Hover overlay hint */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
-            <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
-              {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
-              <span>{isVideo ? 'ویڈیو چلائیں' : isThumbnail ? 'تھمب نیل بڑا کریں' : 'بڑا کر کے دیکھیں'}</span>
-            </span>
-          </div>
+          {!isPlayingInline && (
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
+              <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
+                {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
+                <span>{isVideo ? 'ویڈیو چلائیں' : isThumbnail ? 'تھمب نیل بڑا کریں' : 'بڑا کر کے دیکھیں'}</span>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Category Label Badge */}
@@ -160,7 +186,7 @@ function PortfolioPosterCard({
       <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2 mt-auto">
         <button
           type="button"
-          onClick={() => onPreview({ ...project, imageSrc })}
+          onClick={() => onPreview(project)}
           className="flex-1 py-2 px-3 rounded-xl bg-amber-400/10 hover:bg-amber-400 text-amber-300 hover:text-slate-950 border border-amber-400/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer"
         >
           {isVideo ? (

@@ -36,7 +36,9 @@ function MediaCardItem({
   onPreview: (proj: PortfolioProject) => void;
 }) {
   const [loadError, setLoadError] = useState(false);
+  const [isPlayingInline, setIsPlayingInline] = useState(false);
   const imageSrc = item.imageSrc ? resolveAssetUrl(item.imageSrc) : '';
+  const videoSrc = item.videoSrc ? resolveAssetUrl(item.videoSrc) : '';
   const isVideo = Boolean(item.videoSrc);
   const hasGallery = Boolean(item.gallery && item.gallery.length > 1);
 
@@ -54,6 +56,14 @@ function MediaCardItem({
       videoSrc: targetImgPath ? undefined : item.videoSrc,
       aspectRatio: item.aspectRatio === '16/9' ? '16/9' : '1/1'
     });
+  };
+
+  const handleMediaAreaClick = () => {
+    if (isVideo && videoSrc) {
+      setIsPlayingInline(true);
+    } else {
+      handleOpenImage();
+    }
   };
 
   const getMediaIcon = (iconName: string) => {
@@ -135,29 +145,45 @@ function MediaCardItem({
         ) : item.imageSrc && !loadError ? (
           <div 
             className={`relative ${item.aspectRatio === '16/9' ? 'aspect-video' : 'aspect-square'} w-full rounded-xl overflow-hidden bg-slate-950/90 border border-white/10 mb-4 cursor-pointer group/img flex items-center justify-center`}
-            onClick={() => handleOpenImage()}
+            onClick={!isPlayingInline ? handleMediaAreaClick : undefined}
           >
-            <img 
-              src={imageSrc} 
-              alt={item.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105"
-              onError={(e) => {
-                const target = e.currentTarget;
-                if (!target.dataset.triedRelative) {
-                  target.dataset.triedRelative = '1';
-                  target.src = item.imageSrc || '';
-                } else if (!target.dataset.triedSingleJpg && item.imageSrc?.endsWith('.jpg.jpg')) {
-                  target.dataset.triedSingleJpg = '1';
-                  target.src = resolveAssetUrl(item.imageSrc.replace(/\.jpg\.jpg$/, '.jpg'));
-                } else {
-                  setLoadError(true);
-                }
-              }}
-            />
+            {isVideo && isPlayingInline && videoSrc ? (
+              <video
+                controls
+                autoPlay
+                playsInline
+                preload="metadata"
+                poster={imageSrc || undefined}
+                className="w-full h-full object-contain bg-black"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <source src={videoSrc} type="video/mp4" />
+                {item.videoSrc && <source src={item.videoSrc} type="video/mp4" />}
+                Your browser does not support HTML5 video.
+              </video>
+            ) : (
+              <img 
+                src={imageSrc} 
+                alt={item.title}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover/img:scale-105"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.triedRelative) {
+                    target.dataset.triedRelative = '1';
+                    target.src = item.imageSrc || '';
+                  } else if (!target.dataset.triedSingleJpg && item.imageSrc?.endsWith('.jpg.jpg')) {
+                    target.dataset.triedSingleJpg = '1';
+                    target.src = resolveAssetUrl(item.imageSrc.replace(/\.jpg\.jpg$/, '.jpg'));
+                  } else {
+                    setLoadError(true);
+                  }
+                }}
+              />
+            )}
 
             {/* Play Button overlay for Videos */}
-            {isVideo && (
+            {isVideo && !isPlayingInline && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-11 h-11 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover/img:scale-110">
                   <Play className="w-5 h-5 fill-slate-950 ml-0.5" />
@@ -166,12 +192,14 @@ function MediaCardItem({
             )}
 
             {/* Hover overlay hint */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
-              <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
-                {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
-                <span>{isVideo ? 'ویڈیو چلائیں / Play Video' : 'دیکھیں / View Content'}</span>
-              </span>
-            </div>
+            {!isPlayingInline && (
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-center p-3">
+                <span className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-medium bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-400/30 shadow-lg">
+                  {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{isVideo ? 'ویڈیو چلائیں / Play Video' : 'دیکھیں / View Content'}</span>
+                </span>
+              </div>
+            )}
           </div>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-amber-400/25 bg-slate-950/80 p-5 flex flex-col items-center justify-center text-center my-2">
