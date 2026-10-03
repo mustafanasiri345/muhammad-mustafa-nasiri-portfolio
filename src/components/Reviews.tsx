@@ -41,6 +41,7 @@ import {
   auth, 
   db, 
   googleProvider, 
+  popupRedirectResolver,
   ADMIN_EMAIL, 
   OperationType, 
   handleFirestoreError 
@@ -111,7 +112,7 @@ export function Reviews() {
 
   // Handle redirect result if signInWithRedirect was used as fallback
   useEffect(() => {
-    getRedirectResult(auth)
+    getRedirectResult(auth, popupRedirectResolver)
       .then((result) => {
         if (result?.user) {
           setShowAdminPanel(true);
@@ -330,12 +331,12 @@ export function Reviews() {
     setAuthError(null);
     setAuthLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithPopup(auth, googleProvider, popupRedirectResolver);
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code || '';
       if (code === 'auth/popup-blocked') {
         try {
-          await signInWithRedirect(auth, googleProvider);
+          await signInWithRedirect(auth, googleProvider, popupRedirectResolver);
           return;
         } catch (redirErr) {
           setAuthError(
@@ -346,7 +347,10 @@ export function Reviews() {
         setAuthError(
           `Domain "${window.location.hostname}" is not yet authorized in Firebase Auth. Add "${window.location.hostname}" in Firebase Console → Authentication → Settings → Authorized domains.`
         );
-      } else if (code !== 'auth/popup-closed-by-user') {
+      } else if (
+        code !== 'auth/popup-closed-by-user' &&
+        code !== 'auth/cancelled-popup-request'
+      ) {
         setAuthError(
           err instanceof Error ? err.message : 'Google Sign-In failed. Please try again.'
         );
@@ -825,41 +829,41 @@ export function Reviews() {
       {showAdminPanel && (
         <div
           id="admin-reviews"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-fade-in"
           onClick={() => setShowAdminPanel(false)}
           role="dialog"
           aria-modal="true"
           aria-label="Admin Review Panel"
         >
           <div
-            className="relative w-full max-w-3xl rounded-3xl bg-[#0a0f1d] border border-amber-400/35 p-6 sm:p-8 shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-3xl rounded-2xl sm:rounded-3xl bg-[#0a0f1d] border border-amber-400/35 p-4 sm:p-8 shadow-2xl my-auto max-h-[92dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-start sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
-                  <Lock className="w-5 h-5" />
+            <div className="flex flex-wrap items-start sm:items-center justify-between gap-3 pb-4 sm:pb-5 mb-5 sm:mb-6 border-b border-white/10">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
+                  <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white flex flex-wrap items-center gap-2">
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-xl font-bold text-white flex flex-wrap items-center gap-2">
                     <span>Admin Review Dashboard</span>
                     <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/30">
                       Firestore Secured
                     </span>
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Authorized Administrator Moderation Panel
+                  <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">
+                    {currentUser?.email ? `Signed in: ${currentUser.email}` : 'Authorized Administrator Moderation Panel'}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 ml-auto">
                 {currentUser && (
                   <button
                     type="button"
                     onClick={handleAdminSignOut}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 text-xs font-medium transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 text-xs font-medium transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
@@ -878,23 +882,23 @@ export function Reviews() {
 
             {/* State 1: Not Signed In */}
             {!currentUser ? (
-              <div className="py-8 px-4 text-center max-w-md mx-auto space-y-5">
-                <div className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center text-amber-300 mx-auto">
-                  <ShieldCheck className="w-8 h-8" />
+              <div className="py-6 sm:py-8 px-2 sm:px-4 text-center max-w-md mx-auto space-y-5">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center text-amber-300 mx-auto">
+                  <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-lg font-bold text-white">
+                  <h4 className="text-base sm:text-lg font-bold text-white">
                     Administrator Sign-In
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                    Sign in with your authorized Google account (<span className="text-amber-300 font-mono">{ADMIN_EMAIL}</span>) to view and moderate pending reviews.
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed break-words">
+                    Sign in with your authorized Google account (<span className="text-amber-300 font-mono break-all">{ADMIN_EMAIL}</span>) to view and moderate pending reviews.
                   </p>
                 </div>
 
                 {authError && (
-                  <div className="text-xs text-red-300 bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 text-left flex items-start gap-2">
+                  <div className="text-xs text-red-300 bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 text-left flex items-start gap-2 break-words">
                     <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                    <span>{authError}</span>
+                    <span className="min-w-0 break-words">{authError}</span>
                   </div>
                 )}
 
@@ -919,21 +923,21 @@ export function Reviews() {
               </div>
             ) : !isAuthorizedAdmin ? (
               /* State 2: Signed In with an Unauthorized Google Account */
-              <div className="py-8 px-6 rounded-2xl bg-red-500/10 border border-red-500/30 text-center max-w-lg mx-auto space-y-4">
+              <div className="py-6 sm:py-8 px-4 sm:px-6 rounded-2xl bg-red-500/10 border border-red-500/30 text-center max-w-lg mx-auto space-y-4">
                 <div className="w-14 h-14 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto">
                   <ShieldAlert className="w-7 h-7" />
                 </div>
                 <h4 className="text-base sm:text-lg font-bold text-red-300">
                   Access denied. This account is not authorized.
                 </h4>
-                <p className="text-xs text-slate-400">
-                  Signed in as <span className="text-slate-200 font-mono">{currentUser.email}</span>. Only the authorized administrator account may view or moderate pending reviews.
+                <p className="text-xs text-slate-400 break-words">
+                  Signed in as <span className="text-slate-200 font-mono break-all">{currentUser.email}</span>. Only the authorized administrator account may view or moderate pending reviews.
                 </p>
                 <div className="pt-2">
                   <button
                     type="button"
                     onClick={handleAdminSignOut}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 text-xs font-semibold transition-colors cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 text-xs font-semibold transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out & Switch Account</span>
@@ -942,74 +946,74 @@ export function Reviews() {
               </div>
             ) : (
               /* State 3: Verified Authorized Admin (mustafanasiri345@gmail.com) */
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 {/* Admin Summary Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between">
                     <div>
                       <span className="text-[11px] font-mono uppercase text-slate-400 block">
                         Pending Reviews
                       </span>
-                      <span className="text-2xl font-extrabold text-amber-300 font-mono">
+                      <span className="text-xl sm:text-2xl font-extrabold text-amber-300 font-mono">
                         {pendingReviews.length}
                       </span>
                     </div>
-                    <Clock className="w-6 h-6 text-amber-400/70" />
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400/70 shrink-0" />
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between">
+                  <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between">
                     <div>
                       <span className="text-[11px] font-mono uppercase text-slate-400 block">
                         Approved Reviews
                       </span>
-                      <span className="text-2xl font-extrabold text-emerald-400 font-mono">
+                      <span className="text-xl sm:text-2xl font-extrabold text-emerald-400 font-mono">
                         {approvedCount}
                       </span>
                     </div>
-                    <CheckCircle2 className="w-6 h-6 text-emerald-400/70" />
+                    <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400/70 shrink-0" />
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between">
+                  <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between">
                     <div>
                       <span className="text-[11px] font-mono uppercase text-slate-400 block">
                         Average Approved Rating
                       </span>
-                      <span className="text-2xl font-extrabold text-white font-mono">
+                      <span className="text-xl sm:text-2xl font-extrabold text-white font-mono">
                         {averageRating ? `${averageRating} / 5` : '—'}
                       </span>
                     </div>
-                    <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
+                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 fill-amber-400 shrink-0" />
                   </div>
                 </div>
 
                 {/* Pending Reviews Queue */}
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider font-mono mb-4 flex items-center gap-2">
+                  <h4 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider font-mono mb-3 sm:mb-4 flex items-center gap-2">
                     <Clock className="w-4 h-4 text-amber-400" />
                     <span>Pending Reviews ({pendingReviews.length})</span>
                   </h4>
 
                   {loadingPending ? (
-                    <div className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex items-center justify-center gap-2 text-xs text-slate-400">
+                    <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex items-center justify-center gap-2 text-xs text-slate-400">
                       <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
                       <span>Loading pending reviews...</span>
                     </div>
                   ) : pendingReviews.length === 0 ? (
-                    <div className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center text-xs sm:text-sm text-slate-400">
+                    <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/60 border border-white/10 text-center text-xs sm:text-sm text-slate-400">
                       No pending reviews waiting for moderation right now.
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {pendingReviews.map((item) => (
                         <div
                           key={item.id}
-                          className="p-5 rounded-2xl bg-slate-900/90 border border-amber-400/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                          className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-amber-400/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                         >
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-3">
-                              <span className="text-sm font-bold text-white flex items-center gap-1.5">
-                                <User className="w-4 h-4 text-amber-400" />
-                                {item.name}
+                          <div className="space-y-2 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                              <span className="text-sm font-bold text-white flex items-center gap-1.5 break-words">
+                                <User className="w-4 h-4 text-amber-400 shrink-0" />
+                                <span className="break-words">{item.name}</span>
                               </span>
                               <div className="flex items-center gap-0.5">
                                 {[1, 2, 3, 4, 5].map((s) => (
@@ -1032,17 +1036,17 @@ export function Reviews() {
                               </span>
                             </div>
 
-                            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed break-words">
                               "{item.message}"
                             </p>
                           </div>
 
-                          <div className="flex items-center gap-2.5 shrink-0">
+                          <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
                             <button
                               type="button"
                               disabled={actionLoadingId === item.id}
                               onClick={() => handleApproveReview(item.id)}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs transition-colors cursor-pointer"
+                              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs transition-colors cursor-pointer"
                             >
                               {actionLoadingId === item.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -1056,7 +1060,7 @@ export function Reviews() {
                               type="button"
                               disabled={actionLoadingId === item.id}
                               onClick={() => handleRejectDeleteReview(item.id)}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 disabled:opacity-50 text-red-300 border border-red-500/30 font-semibold text-xs transition-colors cursor-pointer"
+                              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 disabled:opacity-50 text-red-300 border border-red-500/30 font-semibold text-xs transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
                               <span>Reject / Delete</span>
